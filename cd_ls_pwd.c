@@ -1,4 +1,6 @@
 #include "util.h"
+#include <sys/types.h>
+#include <unistd.h>
 /************* cd_ls_pwd.c file **************/
 int cd()
 {
@@ -60,7 +62,7 @@ int ls_file(MINODE *mip, char *name)
   // // print -> linkname if symbolic file
   if ((mip->INODE.i_mode & 0xF000)== 0xA000){
       char linkname[FILENAME_MAX];
-      readlink(mip, linkname, FILENAME_MAX);
+      readlink((const char* restrict) mip, linkname, FILENAME_MAX);
       printf(" -> %s", linkname); // print linked name
   }
   printf("\n");
