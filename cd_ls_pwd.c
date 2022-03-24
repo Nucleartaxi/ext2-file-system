@@ -1,3 +1,4 @@
+#include "util.h"
 /************* cd_ls_pwd.c file **************/
 int cd()
 {
