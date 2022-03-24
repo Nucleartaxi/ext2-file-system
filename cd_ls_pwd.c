@@ -6,7 +6,7 @@ int cd()
   if (!strcmp(pathname, "")) {
     printf("cd no pathname given, returning to root\n");
     running->cwd = root;
-    return;
+    return 0;
   }
   int ino = getino(pathname); //return error if ino == 0
   MINODE* mip = iget(dev, ino); 
@@ -113,7 +113,7 @@ int ls()
 
 char* rpwd(MINODE *wd) {
   if (wd == root) {
-    return;
+    return 0;
   } 
   int parent_ino;
   int current_ino = findino(wd, &parent_ino);
@@ -123,7 +123,7 @@ char* rpwd(MINODE *wd) {
   findmyname(pip, current_ino, myname);
   rpwd(pip);
   printf("/%s", myname);
-  return;
+  return 0;
 }
 char* pwd(MINODE *wd)
 {
