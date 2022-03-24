@@ -118,7 +118,7 @@ char* rpwd(MINODE *wd) {
   int current_ino = findino(wd, &parent_ino);
   printf("current_ino=%d parent_ino=%d\n", current_ino, parent_ino);
   MINODE* pip = iget(dev, parent_ino); //parent inode pointer 
-  char* myname[64];
+  char myname[64];
   findmyname(pip, current_ino, myname);
   rpwd(pip);
   printf("/%s", myname);
