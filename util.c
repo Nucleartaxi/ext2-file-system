@@ -8,6 +8,9 @@
 #include <sys/stat.h>
 #include <time.h>
 
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "type.h"
 
 /**** globals defined in main.c file ****/
