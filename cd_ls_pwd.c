@@ -52,7 +52,7 @@ int ls_file(MINODE *mip, char *name)
   printf("%8d ",mip->INODE.i_size); // file size
   // print time
   // printf("%s ", ctime(&mip->INODE.i_mtime));
-  strcpy(ftime, ctime(&mip->INODE.i_mtime)); // print time in calendar form
+  strcpy(ftime, ctime((time_t*)&mip->INODE.i_mtime)); // print time in calendar form
   ftime[strlen(ftime)-1] = 0; // kill \n at end
   printf("%s ",ftime);
   // print name
