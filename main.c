@@ -59,6 +59,7 @@ int mount_root()
 }
 
 char *disk = "diskimage";
+int quit(); //forward declaration
 int main(int argc, char *argv[ ])
 {
   int ino;
