@@ -1,4 +1,5 @@
 #include "util.h"
+#include "globals.h"
 #include <sys/types.h>
 #include <unistd.h>
 /************* cd_ls_pwd.c file **************/
