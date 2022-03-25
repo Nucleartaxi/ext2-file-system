@@ -16,7 +16,7 @@
 
 #include "globals.h"
 
-#include "cd_ls_pwd.c"
+#include "cd_ls_pwd.h"
 
 int init()
 {

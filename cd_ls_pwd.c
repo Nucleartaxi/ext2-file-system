@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+
 #include "util.h"
 #include "globals.h"
 #include <sys/types.h>
