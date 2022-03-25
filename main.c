@@ -12,7 +12,7 @@
 
 #include "type.h"
 
-extern MINODE *iget();
+#include "util.h"
 
 MINODE minode[NMINODE];
 MINODE *root;
