@@ -7,16 +7,20 @@
 #include "globals.h"
 #include <sys/types.h>
 #include <unistd.h>
-/************* cd_ls_pwd.c file **************/
+
+//basic change directory
 int cd()
 {
-  // printf("cd: under construction READ textbook!!!!\n");
-  if (!strcmp(pathname, "")) {
+  if (!strcmp(pathname, "")) { //for no pathname
     printf("cd no pathname given, returning to root\n");
-    running->cwd = root;
+    running->cwd = root; //sets cwd to root
     return 0;
   }
-  int ino = getino(pathname); //return error if ino == 0
+  int ino = getino(pathname);
+  if(ino == 0){ //error if ino doesn't exist
+    printf("ERROR: ino doesn't exist\n");
+    return -1;
+  }
   MINODE* mip = iget(dev, ino); 
   if (S_ISDIR(mip->INODE.i_mode)) {
     iput(running->cwd); //release old cwd
@@ -25,19 +29,16 @@ int cd()
     printf("ERROR: not a directory\n");
     return -1;
   }
-
-
-  // READ Chapter 11.7.3 HOW TO chdir
 }
 
+//ls for single file
 int ls_file(MINODE *mip, char *name)
 {
-  // printf("ls_file: to be done: READ textbook!!!!\n");
   char *t1 = "xwrxwrxwr-------";
   char *t2 = "----------------";
-  // printf("%s  ", name);
-  int r, i;
+  int r; //are we using this r? It doesn't look like it
   char ftime[64];
+	
   if ((mip->INODE.i_mode & 0xF000) == 0x8000) { // if (S_ISREG())
       printf("%c",'-');
   }
@@ -47,10 +48,11 @@ int ls_file(MINODE *mip, char *name)
   if ((mip->INODE.i_mode & 0xF000) == 0xA000){ // if (S_ISLNK())
       printf("%c",'l');
   }
-  for (i=8; i >= 0; i--){
+  for (int i=8; i >= 0; i--){
       if (mip->INODE.i_mode & (1 << i)){ // print r|w|x
           printf("%c", t1[i]);
-      } else{
+      } 
+      else{
           printf("%c", t2[i]); // or print -
       }
   }
@@ -58,26 +60,28 @@ int ls_file(MINODE *mip, char *name)
   printf("%4d ",mip->INODE.i_gid); // gid
   printf("%4d ",mip->INODE.i_uid); // uid
   printf("%8d ",mip->INODE.i_size); // file size
+	
   // print time
-  // printf("%s ", ctime(&mip->INODE.i_mtime));
-  strcpy(ftime, ctime((time_t*)&mip->INODE.i_mtime)); // print time in calendar form
-  ftime[strlen(ftime)-1] = 0; // kill \n at end
+  strcpy(ftime, ctime((time_t*)&mip->INODE.i_mtime)); //copy time in calendar form
+  ftime[strlen(ftime)-1] = 0; //kill \n at end
   printf("%s ",ftime);
+	
   // print name
-  printf("%s", name); // print file basename
-  // // print -> linkname if symbolic file
+  printf("%s", name); //print file basename
+  //print -> linkname if symbolic file
   if ((mip->INODE.i_mode & 0xF000)== 0xA000){
       char linkname[FILENAME_MAX];
       readlink((const char* restrict) mip, linkname, FILENAME_MAX);
       printf(" -> %s", linkname); // print linked name
   }
+	
   printf("\n");
-  // READ Chapter 11.7.3 HOW TO ls
 }
 
+//ls for a directory
 int ls_dir(MINODE *mip)
 {
-  printf("ls_dir\n");
+  printf("ls_dir\n"); //Was this just for testing?
 
   char buf[BLKSIZE], temp[256];
   DIR *dp;
@@ -87,13 +91,13 @@ int ls_dir(MINODE *mip)
   dp = (DIR *)buf;
   cp = buf;
   
-  while (cp < buf + BLKSIZE){
-     //gets the name of each file
+  while (cp < buf + BLKSIZE){ //steps through all files in directory
      mip = iget(dev, dp->inode);
+     //gets the name of each file
      strncpy(temp, dp->name, dp->name_len);
      temp[dp->name_len] = 0;
 	
-     ls_file(mip, temp);
+     ls_file(mip, temp); //does ls for each file
 
      cp += dp->rec_len;
      dp = (DIR *)cp;
@@ -101,12 +105,14 @@ int ls_dir(MINODE *mip)
   printf("\n");
 }
 
+//basic ls
 int ls()
 {
   if (!strcmp(pathname, "")) { //if no path is specified, use cwd by default
     printf("No path specified, using cwd\n");
     ls_dir(running->cwd);
-  } else {
+  }
+  else {
     int pathname_ino = getino(pathname);
     MINODE* mip = iget(dev, pathname_ino); //opening iget
     if (!S_ISDIR(mip->INODE.i_mode)) { //checks to make sure the path is a directory, not a file
@@ -119,8 +125,9 @@ int ls()
   return 0;
 }
 
+//print working directory helper //continue from here
 char* rpwd(MINODE *wd) {
-  if (wd == root) {
+  if (wd == root) { //exits recursion on root
     return 0;
   } 
   int parent_ino;
