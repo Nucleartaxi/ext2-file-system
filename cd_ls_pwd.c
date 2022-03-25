@@ -1,3 +1,12 @@
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+
+#include "util.h"
+#include "globals.h"
+#include <sys/types.h>
+#include <unistd.h>
 /************* cd_ls_pwd.c file **************/
 int cd()
 {
@@ -5,7 +14,7 @@ int cd()
   if (!strcmp(pathname, "")) {
     printf("cd no pathname given, returning to root\n");
     running->cwd = root;
-    return;
+    return 0;
   }
   int ino = getino(pathname); //return error if ino == 0
   MINODE* mip = iget(dev, ino); 
@@ -51,7 +60,7 @@ int ls_file(MINODE *mip, char *name)
   printf("%8d ",mip->INODE.i_size); // file size
   // print time
   // printf("%s ", ctime(&mip->INODE.i_mtime));
-  strcpy(ftime, ctime(&mip->INODE.i_mtime)); // print time in calendar form
+  strcpy(ftime, ctime((time_t*)&mip->INODE.i_mtime)); // print time in calendar form
   ftime[strlen(ftime)-1] = 0; // kill \n at end
   printf("%s ",ftime);
   // print name
@@ -59,7 +68,7 @@ int ls_file(MINODE *mip, char *name)
   // // print -> linkname if symbolic file
   if ((mip->INODE.i_mode & 0xF000)== 0xA000){
       char linkname[FILENAME_MAX];
-      readlink(mip, linkname, FILENAME_MAX);
+      readlink((const char* restrict) mip, linkname, FILENAME_MAX);
       printf(" -> %s", linkname); // print linked name
   }
   printf("\n");
@@ -112,17 +121,17 @@ int ls()
 
 char* rpwd(MINODE *wd) {
   if (wd == root) {
-    return;
+    return 0;
   } 
   int parent_ino;
   int current_ino = findino(wd, &parent_ino);
   printf("current_ino=%d parent_ino=%d\n", current_ino, parent_ino);
   MINODE* pip = iget(dev, parent_ino); //parent inode pointer 
-  char* myname[64];
+  char myname[64];
   findmyname(pip, current_ino, myname);
   rpwd(pip);
   printf("/%s", myname);
-  return;
+  return 0;
 }
 char* pwd(MINODE *wd)
 {

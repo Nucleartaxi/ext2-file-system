@@ -1,3 +1,7 @@
+#ifndef TYPE_H
+#define TYPE_H
+
+#include <ext2fs/ext2_fs.h> //so that the ext2 structs can be defined 
 /*************** type.h file for LEVEL-1 ****************/
 typedef unsigned char  u8;
 typedef unsigned short u16;
@@ -37,3 +41,4 @@ typedef struct proc{
   int          gid;
   MINODE      *cwd;      // CWD directory pointer  
 }PROC;
+#endif

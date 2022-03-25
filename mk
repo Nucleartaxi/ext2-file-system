@@ -1,6 +1,6 @@
 rm a.out 2> /dev/null
 
-gcc main.c util.c
+gcc *.c
 
 ./a.out
 

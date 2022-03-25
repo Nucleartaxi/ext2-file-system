@@ -12,21 +12,11 @@
 
 #include "type.h"
 
-extern MINODE *iget();
+#include "util.h"
 
-MINODE minode[NMINODE];
-MINODE *root;
-PROC   proc[NPROC], *running;
+#include "globals.h"
 
-char gpath[128]; // global for tokenized components
-char *name[64];  // assume at most 64 components in pathname
-int   n;         // number of component strings
-
-int fd, dev;
-int nblocks, ninodes, bmap, imap, iblk;
-char line[128], cmd[32], pathname[128];
-
-#include "cd_ls_pwd.c"
+#include "cd_ls_pwd.h"
 
 int init()
 {
@@ -59,6 +49,7 @@ int mount_root()
 }
 
 char *disk = "diskimage";
+int quit(); //forward declaration
 int main(int argc, char *argv[ ])
 {
   int ino;
