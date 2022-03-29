@@ -36,7 +36,6 @@ int ls_file(MINODE *mip, char *name)
 {
   char *t1 = "xwrxwrxwr-------";
   char *t2 = "----------------";
-  int r; //are we using this r? It doesn't look like it
   char ftime[64];
 	
   if ((mip->INODE.i_mode & 0xF000) == 0x8000) { // if (S_ISREG())
@@ -81,8 +80,6 @@ int ls_file(MINODE *mip, char *name)
 //ls for a directory
 int ls_dir(MINODE *mip)
 {
-  printf("ls_dir\n"); //Was this just for testing?
-
   char buf[BLKSIZE], temp[256];
   DIR *dp;
   char *cp;
@@ -131,19 +128,19 @@ char* rpwd(MINODE *wd) {
     return 0;
   } 
   int parent_ino;
-  int current_ino = findino(wd, &parent_ino);
+  int current_ino = findino(wd, &parent_ino); //gets parent and ino number
   printf("current_ino=%d parent_ino=%d\n", current_ino, parent_ino);
-  MINODE* pip = iget(dev, parent_ino); //parent inode pointer 
+  MINODE* pip = iget(dev, parent_ino); //gets parent inone into pip
   char myname[64];
-  findmyname(pip, current_ino, myname);
+  findmyname(pip, current_ino, myname); //gets name of current ino
   rpwd(pip);
   printf("/%s", myname);
   return 0;
 }
+
 char* pwd(MINODE *wd)
 {
-  // printf("pwd: READ HOW TO pwd in textbook!!!!\n");
-  if (wd == root){
+  if (wd == root){ //if root do not enter recursion
     printf("/\n");
   } else {
     rpwd(wd);
