@@ -3,5 +3,7 @@
 
 #include "type.h"
 
+int ialloc(int dev);
+int balloc(int dev);
 
 #endif
