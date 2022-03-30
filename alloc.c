@@ -1,5 +1,8 @@
 #include "type.h"
 #include "globals.h"
+#include "util.h"
+#include "stdio.h"
+#include "time.h"
 
 //tests a bit for 1 or 0
 int tst_bit(char *buf, int bit){
@@ -12,7 +15,7 @@ int set_bit(char *buf, int bit){
 }
 
 // dec free inodes count in SUPER and GD (what does dec mean?)
-int decFreeInodes(int dev, char buf){
+int decFreeInodes(int dev, char* buf){
     get_block(dev, 1, buf);
     sp = (SUPER *)buf;
     sp->s_free_inodes_count--;
