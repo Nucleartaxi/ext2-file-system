@@ -49,7 +49,7 @@ int ialloc(int dev){
   return 0;
 }
 
-int balloc(int dev, int ino){
+int balloc(int dev, int ino){ //make sure that this only takes dev as parameter, we don't need ino
     //creates an inode in an minode and writes to disk
     MINODE *mip = iget(dev, ino);
     INODE *ip = &mip->INODE;
