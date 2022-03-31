@@ -4,4 +4,6 @@
 #include "type.h"
 #include "globals.h"
 
+int my_mkdir();
+
 #endif
