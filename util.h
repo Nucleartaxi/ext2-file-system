@@ -12,6 +12,7 @@ int tokenize(char *pathname);
 // return minode pointer to loaded INODE
 MINODE *iget(int dev, int ino);
 
+//releases a used MINODE
 void iput(MINODE *mip);
 
 int search(MINODE *mip, char *name);

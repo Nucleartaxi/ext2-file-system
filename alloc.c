@@ -84,3 +84,5 @@ int balloc(int dev){
     }
   return 0;
 }
+
+//add mialloc and midalloc
