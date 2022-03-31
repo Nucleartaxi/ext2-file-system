@@ -14,8 +14,9 @@ int set_bit(char *buf, int bit){
     buf[bit/8] |= (1 << (bit % 8));
 }
 
-// dec free inodes count in SUPER and GD (what does dec mean?)
-int decFreeInodes(int dev, char* buf){
+// decreases free inodes count in SUPER and GD
+int decFreeInodes(int dev){
+    char buf[BLKSIZE];
     get_block(dev, 1, buf);
     sp = (SUPER *)buf;
     sp->s_free_inodes_count--;
@@ -24,6 +25,20 @@ int decFreeInodes(int dev, char* buf){
     get_block(dev, 2, buf);
     gp = (GD *)buf;
     gp->bg_free_inodes_count--;
+    put_block(dev, 2, buf);
+}
+
+// decreases free block count in SUPER and GD
+int decFreeBlocks(int dev){
+    char buf[BLKSIZE];
+    get_block(dev, 1, buf);
+    sp = (SUPER *)buf;
+    sp->s_free_blocks_count--;
+    put_block(dev, 1, buf);
+
+    get_block(dev, 2, buf);
+    gp = (GD *)buf;
+    gp->bg_free_blocks_count--;
     put_block(dev, 2, buf);
 }
 
@@ -40,7 +55,7 @@ int ialloc(int dev){
             set_bit(buf, i);
 	        put_block(dev, imap, buf);
 
-	        decFreeInodes(dev, buf);
+	        decFreeInodes(dev);
 
 	        printf("allocated ino = %d\n", i+1); // bits count from 0; ino from 1
             return i+1;
@@ -49,22 +64,23 @@ int ialloc(int dev){
   return 0;
 }
 
-int balloc(int dev, int ino){ //make sure that this only takes dev as parameter, we don't need ino
-    //creates an inode in an minode and writes to disk
-    MINODE *mip = iget(dev, ino);
-    INODE *ip = &mip->INODE;
-    ip->i_mode = 0x41ED; //DIR type and permissions
-    ip->i_uid = running->uid; //sets to owner uid
-    ip->i_gid = running->gid; //sets group ID
-    ip->i_size = BLKSIZE; //sets to uniform size in bytes
-    ip->i_links_count = 2; //for . and ..
-    ip->i_atime = ip->i_ctime = ip->i_mtime = time(0L);
-    ip->i_blocks = 2; //blocks count in 512 byte chunks
-    //ip->i_block[0] = bno; need to find what block number is *************
-    for (int i = 1; 1 <= 14; i++){
-        ip->i_block[i] = 0;
-    }
-    mip->dirty = 1; //marks as dirty
-    iput(mip); //writes INODE to disk
+int balloc(int dev){ 
+    int  i;
+    char buf[BLKSIZE];
 
+    // read block_bitmap block
+    get_block(dev, bmap, buf);
+
+    for (i=0; i < nblocks; i++){ // use nblocks from SUPER block
+        if (tst_bit(buf, i)==0){
+            set_bit(buf, i);
+	        put_block(dev, bmap, buf);
+
+	        decFreeBlocks(dev);
+
+	        printf("allocated block = %d\n", i+1); // bits count from 0; block from 1
+            return i+1;
+        }
+    }
+  return 0;
 }
