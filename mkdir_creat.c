@@ -31,6 +31,22 @@ int kmkdir(MINODE* pmip, char* bname) {
     mip->dirty = 1; // mark minode dirty
     iput(mip); // write INODE to disk
 
+    //create data block for new DIR containing . and .. entries 
+    char buf[BLKSIZE];
+    bzero(buf, BLKSIZE); // optional: clear buf[ ] to 0
+    DIR *dp = (DIR *)buf;
+    // make . entry
+    dp->inode = ino;
+    dp->rec_len = 12;
+    dp->name_len = 1;
+    dp->name[0] = '.';
+    // make .. entry: pino=parent DIR ino, blk=allocated block
+    dp = (char *)dp + 12;
+    dp->inode = pmip->ino;
+    dp->rec_len = BLKSIZE-12; // rec_len spans block
+    dp->name_len = 2;
+    dp->name[0] = dp->name[1] = '.';
+    put_block(dev, blk, buf); // write to blk on diks
 }
 
 int my_mkdir() { 
