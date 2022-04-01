@@ -1,6 +1,7 @@
 #include <string.h>
 #include <libgen.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "type.h"
 #include "globals.h"
@@ -11,9 +12,24 @@ int kmkdir(MINODE* pmip, char* bname) {
     //allocate an inode and a disk block 
     int ino = ialloc(dev);
     int blk = balloc(dev);
-    printf("ino=%d blk=%d", ino, blk);
+    printf("ino=%d blk=%d\n", ino, blk);
 
-    INODE* mip = iget(dev, ino);
+    //load INODE into a minode
+    MINODE* mip = iget(dev, ino);
+    INODE *ip = &mip->INODE;
+    ip->i_mode = 0x41ED; // 040755: DIR type and permissions
+    ip->i_uid = running->uid; // owner uid
+    ip->i_gid = running->gid; // group Id
+    ip->i_size = BLKSIZE; // size in bytes
+    ip->i_links_count = 2; // links count=2 because of . and ..
+    ip->i_atime = ip->i_ctime = ip->i_mtime = time(0L);
+    ip->i_blocks = 2; // LINUX: Blocks count in 512-byte chunks
+    ip->i_block[0] = blk; // new DIR has one data block
+    for (int i = 1; i <= 14; ++i) { //ip->i_block[1] to ip->i_block[14] = 0;
+        ip->i_block[i] = 0;
+    }
+    mip->dirty = 1; // mark minode dirty
+    iput(mip); // write INODE to disk
 
 }
 
