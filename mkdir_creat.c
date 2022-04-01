@@ -5,7 +5,17 @@
 #include "type.h"
 #include "globals.h"
 #include "util.h"
+#include "alloc.h"
 
+int kmkdir(MINODE* pmip, char* bname) {
+    //allocate an inode and a disk block 
+    int ino = ialloc(dev);
+    int blk = balloc(dev);
+    printf("ino=%d blk=%d", ino, blk);
+
+    INODE* mip = iget(dev, ino);
+
+}
 
 int my_mkdir() { 
     //divide pathname into dname and bname
@@ -24,14 +34,20 @@ int my_mkdir() {
         printf("%s is a dir\n", dname);
     } else {
         printf("Error: %s is not a dir\n", dname);
+        iput(pmip);
         return -1;
     }
 
     //basename must not exist in parent DIR:
     if (search(pmip, bname) == 0) {
         printf("basename %s does not exist in parent directory. This is good\n", bname);
+        kmkdir(pmip, bname);
+        iput(pmip);
+        return 0;
+
     } else {
         printf("Error: basename %s already exists in parent directory.\n", bname);
+        iput(pmip);
         return -1;
     }
 }
