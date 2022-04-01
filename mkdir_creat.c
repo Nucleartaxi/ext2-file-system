@@ -8,7 +8,7 @@
 #include "util.h"
 #include "alloc.h"
 
-int enter_child(MINODE* pmip, int ino) { //enters ino, basename as dir_entry to parent INODE
+int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as dir_entry to parent INODE
     char buf[BLKSIZE];
     for (int i = 0; i < 12; ++i) {
         if (pmip->INODE.i_block[i] == 0) {
@@ -22,17 +22,20 @@ int enter_child(MINODE* pmip, int ino) { //enters ino, basename as dir_entry to 
         char* cp = buf;
 
         while (cp + dp->rec_len < buf + BLKSIZE) {
+            int test_ideal_length = 4*(  (8 + dp->name_len + 3) / 4  );
             printf("dp->rec_len=%d\n", dp->rec_len);
+            printf("dp test_ideal_length=%d\n", test_ideal_length);
             cp += dp->rec_len; 
             dp = (DIR*) cp;
         }
         //dp points to last entry in block 
-        printf("dp->rec_len=%d\n", dp->rec_len);
-        
-
-
         int ideal_length = 4*(  (8 + dp->name_len + 3) / 4  );
-        int need_length = 4*(  (8 + dp->name_len + 3) / 4  );
+        printf("dp->rec_len=%d\n", dp->rec_len);
+        printf("dp ideal_length=%d\n", ideal_length);
+        
+        int need_length = 4*(  (8 + strlen(bname) + 3) / 4  );
+        printf("len basename=%d\n", (int) strlen(bname));
+        printf("need length=%d\n", need_length);
     }
 }
 
@@ -77,7 +80,7 @@ int kmkdir(MINODE* pmip, char* bname) { //creates the directory
     put_block(dev, blk, buf); // write to blk on diks
 
     //enter_child 
-    enter_child(pmip, ino);
+    enter_child(pmip, ino, bname);
 }
 
 int my_mkdir() { 
