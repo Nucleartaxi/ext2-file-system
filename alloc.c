@@ -1,8 +1,9 @@
+#include "stdio.h"
+#include "time.h"
+
 #include "type.h"
 #include "globals.h"
 #include "util.h"
-#include "stdio.h"
-#include "time.h"
 
 //tests a bit for 1 or 0
 int tst_bit(char *buf, int bit){
@@ -99,9 +100,4 @@ MINODE* mialloc(){
     }
     printf("FS panic: out of minodes\n");
     return 0;
-}
-
-//releases a used minode
-int midalloc(MINODE *mip){
-    mip->refCount = 0;
 }
