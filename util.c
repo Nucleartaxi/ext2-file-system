@@ -14,6 +14,7 @@
 #include "globals.h"
 #include "type.h"
 #include "alloc.h"
+#include "dealloc.h"
 
 int get_block(int dev, int blk, char *buf)
 {
