@@ -8,7 +8,17 @@
 #include "util.h"
 #include "alloc.h"
 
-int kmkdir(MINODE* pmip, char* bname) {
+int enter_child(MINODE* pmip, int ino) { //enters ino, basename as dir_entry to parent INODE
+    char buf[BLKSIZE];
+    for (int i = 0; i < 12; ++i) {
+        if (pmip->INODE.i_block[i] == 0) {
+            printf("i_block[%d]==0\n", i);
+            break;
+        }
+    }
+}
+
+int kmkdir(MINODE* pmip, char* bname) { //creates the directory
     //allocate an inode and a disk block 
     int ino = ialloc(dev);
     int blk = balloc(dev);
@@ -41,12 +51,15 @@ int kmkdir(MINODE* pmip, char* bname) {
     dp->name_len = 1;
     dp->name[0] = '.';
     // make .. entry: pino=parent DIR ino, blk=allocated block
-    dp = (char *)dp + 12;
+    dp = (DIR*)((char *)dp + 12);
     dp->inode = pmip->ino;
     dp->rec_len = BLKSIZE-12; // rec_len spans block
     dp->name_len = 2;
     dp->name[0] = dp->name[1] = '.';
     put_block(dev, blk, buf); // write to blk on diks
+
+    //enter_child 
+    enter_child(pmip, ino);
 }
 
 int my_mkdir() { 
