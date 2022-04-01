@@ -15,6 +15,24 @@ int enter_child(MINODE* pmip, int ino) { //enters ino, basename as dir_entry to 
             printf("i_block[%d]==0\n", i);
             break;
         }
+        
+        //step to last entry of data block
+        get_block(dev, pmip->INODE.i_block[i], buf);
+        DIR* dp = (DIR*) buf;
+        char* cp = buf;
+
+        while (cp + dp->rec_len < buf + BLKSIZE) {
+            printf("dp->rec_len=%d\n", dp->rec_len);
+            cp += dp->rec_len; 
+            dp = (DIR*) cp;
+        }
+        //dp points to last entry in block 
+        printf("dp->rec_len=%d\n", dp->rec_len);
+        
+
+
+        int ideal_length = 4*(  (8 + dp->name_len + 3) / 4  );
+        int need_length = 4*(  (8 + dp->name_len + 3) / 4  );
     }
 }
 
