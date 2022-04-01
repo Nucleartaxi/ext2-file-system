@@ -8,4 +8,9 @@ int ialloc(int dev);
 //allocates an block number from bitmap
 int balloc(int dev);
 
+//allocates a free minode for use
+MINODE* mialloc();
+//releases a used minode
+int midalloc(MINODE *mip);
+
 #endif

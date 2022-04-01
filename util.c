@@ -13,6 +13,7 @@
 
 #include "globals.h"
 #include "type.h"
+#include "alloc.h"
 
 int get_block(int dev, int blk, char *buf)
 {
@@ -51,78 +52,66 @@ int tokenize(char *pathname)
 // return minode pointer to loaded INODE
 MINODE *iget(int dev, int ino)
 {
-  int i;
-  MINODE *mip;
-  char buf[BLKSIZE];
-  int blk, offset;
-  INODE *ip;
+   MINODE *mip;
+   MTABLE *mp;
+   INODE *ip;
+   int i, blk, offset;
+   char buf[BLKSIZE];
 
-  for (i=0; i<NMINODE; i++){
-    mip = &minode[i];
-    if (mip->refCount && mip->dev == dev && mip->ino == ino){
-       mip->refCount++;
-       //printf("found [%d %d] as minode[%d] in core\n", dev, ino, i);
-       return mip;
-    }
-  }
-    
-  for (i=0; i<NMINODE; i++){
-    mip = &minode[i];
-    if (mip->refCount == 0){
-       //printf("allocating NEW minode[%d] for [%d %d]\n", i, dev, ino);
-       mip->refCount = 1;
-       mip->dev = dev;
-       mip->ino = ino;
+   //search in-memory minodes first
+   for (i=0; i<NMINODE; i++){
+      mip = &minode[i];
+      if (mip->refCount && mip->dev == dev && mip->ino == ino){
+         mip->refCount++;
+         //printf("found [%d %d] as minode[%d] in core\n", dev, ino, i);
+         return mip;
+      }
+   }
 
-       // get INODE of ino to buf    
-       blk    = (ino-1)/8 + iblk;
-       offset = (ino-1) % 8;
-
-       //printf("iget: ino=%d blk=%d offset=%d\n", ino, blk, offset);
-
-       get_block(dev, blk, buf);
-       ip = (INODE *)buf + offset;
-       // copy INODE to mp->INODE
-       mip->INODE = *ip;
-       return mip;
-    }
-  }   
-  printf("PANIC: no more free minodes\n");
-  return 0;
+   // needed INODE=(dev,ino) not in memory
+   mip = mialloc();        //allocate a free minode
+   mip->dev = dev;         // assign to (dev, ino)
+   mip->ino = ino; 
+   blk = (ino-1)/8 + iblk; //disk block containing this inode
+   offset= (ino-1)%8;      //inode in this block
+   get_block(dev, blk, buf);
+   ip = (INODE *)buf + offset;
+   mip->INODE = *ip;       //copy inode to minode.inode
+   //initalize minode
+   mip->refCount = 1;
+   mip->mounted = 0;
+   mip->dirty = 0;
+   mip->mptr = 0;
+   return mip;
 }
 
 void iput(MINODE *mip)
 {
- int i, block, offset;
- char buf[BLKSIZE];
- INODE *ip;
+   INODE *ip;
+   int i, block, offset;
+   char buf[BLKSIZE];
 
- if (mip==0) 
-     return;
-
- mip->refCount--;
+   if (mip==0){ //exits if minode doesn't exist
+      return;
+   }
+   mip->refCount--; //decreases reference count
+   if (mip->refCount > 0){ //exits if no user
+      return;
+   }
+   if (!mip->dirty){ //exits if nothing new to write back
+      return;
+   }
  
- if (mip->refCount > 0) return;
- if (!mip->dirty)       return;
- 
- /* write INODE back to disk */
- /**************** NOTE ******************************
-  For mountroot, we never MODIFY any loaded INODE
-                 so no need to write it back
-  FOR LATER WROK: MUST write INODE back to disk if refCount==0 && DIRTY
+   //write INODE back to disk
+   block = (mip->ino - 1) / 8 + iblk;
+   offset = (mip->ino - 1) % 8;
 
-  Write YOUR code here to write INODE back to disk
- *****************************************************/
- block = (mip->ino - 1) / 8 + iblk;
- offset = (mip->ino - 1) % 8;
-
- //get block containing this inode 
- get_block(mip->dev, block, buf); 
- ip = (INODE*)buf + offset; //ip points at INODE
- *ip = mip->INODE;          //copy INODE in block
- put_block(mip->dev, block, buf); //write back to disk 
-//  midalloc(mip); //mip->refCount = 0
- //IN BOOK 
+   //get block containing this inode 
+   get_block(mip->dev, block, buf); 
+   ip = (INODE*)buf + offset;       //ip points at INODE
+   *ip = mip->INODE;                //copy INODE in block
+   put_block(mip->dev, block, buf); //write back to disk 
+   midalloc(mip);                   //mip->refCount = 0
 } 
 
 int search(MINODE *mip, char *name)
