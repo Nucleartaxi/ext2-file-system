@@ -85,4 +85,23 @@ int balloc(int dev){
   return 0;
 }
 
-//add mialloc and midalloc
+//add mialloc and midalloc pg 338
+
+//allocates a free minode for use
+MINODE* mialloc(){
+    int i;
+    for(i = 0; i < NMINODE; i++){
+        MINODE *mp = &minode[i];
+        if(mp->refCount == 0){
+            mp->refCount = 1;
+            return mp;
+        }
+    }
+    printf("FS panic: out of minodes\n");
+    return 0;
+}
+
+//releases a used minode
+int midalloc(MINODE *mip){
+    mip->refCount = 0;
+}
