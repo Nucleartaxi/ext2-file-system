@@ -29,13 +29,21 @@ int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as 
             dp = (DIR*) cp;
         }
         //dp points to last entry in block 
-        int ideal_length = 4*(  (8 + dp->name_len + 3) / 4  );
+        int dp_ideal_length = 4*(  (8 + dp->name_len + 3) / 4  );
         printf("dp->rec_len=%d\n", dp->rec_len);
-        printf("dp ideal_length=%d\n", ideal_length);
+        printf("dp ideal_length=%d\n", dp_ideal_length);
         
         int need_length = 4*(  (8 + strlen(bname) + 3) / 4  );
         printf("len basename=%d\n", (int) strlen(bname));
         printf("need length=%d\n", need_length);
+
+        int remain = dp->rec_len - dp_ideal_length; //last entry's rec_len - its ideal length
+        printf("remain=%d\n", remain);
+
+        if (remain >= need_length) {
+            printf("remain >= need_length\n");
+            
+        }
     }
 }
 
