@@ -13,22 +13,26 @@ int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as 
     for (int i = 0; i < 12; ++i) {
         if (pmip->INODE.i_block[i] == 0) {
             printf("i_block[%d]==0\n", i);
+            // pmip->INODE.i_size += BLKSIZE;
             break;
         }
         
         //step to last entry of data block
-        get_block(dev, pmip->INODE.i_block[i], buf);
+        get_block(dev, pmip->INODE.i_block[i], buf); //get parent's data block into a buf
         DIR* dp = (DIR*) buf;
         char* cp = buf;
 
+        //step to the last entry in the data block
         while (cp + dp->rec_len < buf + BLKSIZE) {
+            //these 3 lines are for testing
             int test_ideal_length = 4*(  (8 + dp->name_len + 3) / 4  );
             printf("dp->rec_len=%d\n", dp->rec_len);
             printf("dp test_ideal_length=%d\n", test_ideal_length);
+            //these 2 lines are for the actual stepping
             cp += dp->rec_len; 
             dp = (DIR*) cp;
         }
-        //dp points to last entry in block 
+        //dp now points to last entry in block 
         int dp_ideal_length = 4*(  (8 + dp->name_len + 3) / 4  );
         printf("dp->rec_len=%d\n", dp->rec_len);
         printf("dp ideal_length=%d\n", dp_ideal_length);
@@ -40,10 +44,23 @@ int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as 
         int remain = dp->rec_len - dp_ideal_length; //last entry's rec_len - its ideal length
         printf("remain=%d\n", remain);
 
-        if (remain >= need_length) {
+        if (remain >= need_length) { //add the new entry 
             printf("remain >= need_length\n");
-            
+            //enter the new entry as the last entry and trim the previous entry rec_len to its ideal_length
+            //dp points to last entry right now 
+            dp->rec_len = dp_ideal_length; //trim previous entry
+            dp = (DIR*)((char *)dp + dp_ideal_length); //step to start of where we're adding new entry
+            //dp now points to where we are adding the new entry 
+            //add new entry
+            dp->inode = ino;
+            dp->rec_len = remain;
+            dp->name_len = strlen(bname);
+            strcpy(dp->name, bname);
+            printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
+            printf("dp->file_type=%d\n", dp->file_type);
+            put_block(dev, pmip->INODE.i_block[i], buf); //write to disk
         }
+        
     }
 }
 
