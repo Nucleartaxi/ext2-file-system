@@ -10,10 +10,24 @@
 
 int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as dir_entry to parent INODE
     char buf[BLKSIZE];
-    for (int i = 0; i < 12; ++i) {
-        if (pmip->INODE.i_block[i] == 0) {
+    for (int i = 0; i < 12; ++i) { 
+        if (pmip->INODE.i_block[i] == 0) { //we need to allocate a new disk block and add the entry there 
             printf("i_block[%d]==0\n", i);
-            // pmip->INODE.i_size += BLKSIZE;
+            int blk = balloc(dev); //allocate a new block
+            pmip->INODE.i_block[i] = blk; //add the block to the parent dir
+            pmip->INODE.i_size += BLKSIZE; //increment the parent size by BLKSIZE
+
+            get_block(dev, pmip->INODE.i_block[i], buf); //get newly allocated block into a buf
+            DIR* dp = (DIR*) buf;
+
+            //add the new entry
+            dp->inode = ino;
+            dp->rec_len = BLKSIZE;
+            dp->name_len = strlen(bname);
+            strcpy(dp->name, bname);
+            printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
+            printf("dp->file_type=%d\n", dp->file_type);
+            put_block(dev, pmip->INODE.i_block[i], buf); //write to disk
             break;
         }
         
@@ -59,8 +73,10 @@ int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as 
             printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
             printf("dp->file_type=%d\n", dp->file_type);
             put_block(dev, pmip->INODE.i_block[i], buf); //write to disk
+            break;
+        } else {
+            printf("out of space!\n");
         }
-        
     }
 }
 
