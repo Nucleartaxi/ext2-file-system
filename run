@@ -1,0 +1,3 @@
+cp diskimage.ori diskimage #use a new copy of diskimage.ori
+./mk #compile
+./a.out #run a.out
