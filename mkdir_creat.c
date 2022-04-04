@@ -72,7 +72,7 @@ int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as 
             dp->name_len = strlen(bname);
             strncpy(dp->name, bname, dp->name_len);
             printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
-            // printf("dp->file_type=%d\n", dp->file_type);
+            printf("dp->file_type=%d\n", dp->file_type);
             put_block(dev, pmip->INODE.i_block[i], buf); //write to disk
             break;
         } else {
