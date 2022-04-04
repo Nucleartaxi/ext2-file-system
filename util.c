@@ -102,6 +102,7 @@ void iput(MINODE *mip)
    if (!mip->dirty){ //exits if nothing new to write back
       return;
    }
+   mip->dirty = 0; //if it's dirty and we're writing it back, it shouldn't be dirty anymore
  
    //write INODE back to disk
    block = (mip->ino - 1) / 8 + iblk;
