@@ -92,17 +92,16 @@ int ls_dir(MINODE *mip)
   
   while (cp < buf + BLKSIZE){
      //gets the name of each file
-     mip = iget(dev, dp->inode);
+     MINODE* mip2 = iget(dev, dp->inode);
      strncpy(temp, dp->name, dp->name_len);
      temp[dp->name_len] = 0;
 	
-     ls_file(mip, temp);
-
+     ls_file(mip2, temp);
+     iput(mip2);
      cp += dp->rec_len;
      dp = (DIR *)cp;
   }
   printf("\n");
-  iput(mip);
 }
 
 int ls()
