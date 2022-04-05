@@ -102,6 +102,7 @@ int ls_dir(MINODE *mip)
      dp = (DIR *)cp;
   }
   printf("\n");
+  iput(mip);
 }
 
 int ls()
@@ -118,7 +119,7 @@ int ls()
       return -1;
     }
     ls_dir(mip);
-    iput(mip); //closing iput
+    // iput(mip); //closing iput
   }
   return 0;
 }
