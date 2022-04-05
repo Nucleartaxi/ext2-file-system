@@ -14,6 +14,7 @@
 #include "globals.h"
 
 #include "cd_ls_pwd.h"
+#include "mkdir_creat.h"
 
 int init()
 {
@@ -98,7 +99,7 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|quit] ");
+    printf("input command : [ls|cd|pwd|quit|mkdir] ");
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -117,6 +118,8 @@ int main(int argc, char *argv[ ])
        pwd(running->cwd);
     else if (strcmp(cmd, "quit")==0)
        quit();
+    else if (strcmp(cmd, "mkdir")==0)
+       my_mkdir();
   }
 }
 
