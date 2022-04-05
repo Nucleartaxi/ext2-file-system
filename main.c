@@ -15,6 +15,7 @@
 
 #include "cd_ls_pwd.h"
 #include "mkdir_creat.h"
+#include "links.h"
 
 int init()
 {
@@ -129,10 +130,9 @@ int main(int argc, char *argv[ ])
       printf("\n");
       //add rmdir here
     else if (strcmp(cmd, "link")==0)
-      printf("\n");
-      //add link here
+      link();
     else if (strcmp(cmd, "quit")==0)
-       quit();
+      quit();
   }
 }
 
