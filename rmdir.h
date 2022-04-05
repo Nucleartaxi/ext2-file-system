@@ -8,4 +8,6 @@
 #include "util.h"
 #include "dealloc.h"
 
+int rmdir();
+
 #endif
