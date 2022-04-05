@@ -71,5 +71,26 @@ int unlink(){
         idalloc(dev, mip->ino);
     }
     iput(mip);
-    
+}
+
+int symlink(){
+    //verify old file exists
+    int oino = getino(pathname);
+    if(!oino){
+        printf("ERROR: old file does not exist\n");
+        return -1;
+    }
+
+    //verify new file does not exist
+    if(getino(pathname2)){
+        printf("ERROR: new file already exists\n");
+        return -1;
+    }
+
+    //creat new file
+    char oldfile[128];
+    strcpy(oldfile, pathname);
+    strcpy(pathname, pathname2);
+    creat();
+
 }

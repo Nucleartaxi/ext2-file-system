@@ -100,7 +100,7 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|quit] ");
+    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|symlink|quit] ");
     //may want to add memset to clear line and/or the pathname variables
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
@@ -133,6 +133,9 @@ int main(int argc, char *argv[ ])
     else if (strcmp(cmd, "unlink")==0)
       printf("\n");
       //add unlink here
+    else if (strcmp(cmd, "symlink")==0)
+      printf("\n");
+      //add symlink here
     else if (strcmp(cmd, "quit")==0)
       quit();
   }
