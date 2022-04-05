@@ -13,6 +13,6 @@ extern int   n;         // number of component strings
 
 extern int fd, dev;
 extern int nblocks, ninodes, bmap, imap, iblk;
-extern char line[128], cmd[32], pathname[128];
+extern char line[128], cmd[32], pathname[128], pathname2[128];
 
 #endif
