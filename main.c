@@ -99,7 +99,7 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|quit|mkdir] ");
+    printf("input command : [ls|cd|pwd|quit|mkdir|creat] ");
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -120,6 +120,8 @@ int main(int argc, char *argv[ ])
        quit();
     else if (strcmp(cmd, "mkdir")==0)
        my_mkdir();
+    else if (strcmp(cmd, "creat")==0)
+       my_creat();
   }
 }
 

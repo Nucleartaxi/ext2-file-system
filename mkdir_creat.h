@@ -5,5 +5,6 @@
 #include "globals.h"
 
 int my_mkdir();
+int my_creat();
 
 #endif
