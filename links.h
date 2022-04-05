@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <libgen.h>
 
 #include "type.h"
 #include "globals.h"

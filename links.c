@@ -20,11 +20,12 @@ int link(){
     }
 
     //creat new file with same inode number as old file
-    char parent[128], child[128];
-    for(int i = 0; i < (n-1); i++){ //sets parent to new dirname
-        strcat(parent, name[i]);
-    }
-    strcpy(child, name[n - 1]); //sets child to new basename
+    char buf1[128], buf2[128];
+    char *parent, *child;
+    strcpy(buf1, pathname2);
+    parent = dirname(buf1);
+    strcpy(buf2, pathname2);
+    child = basename(buf2); //sets child to new basename
     int pino = getino(parent);
     MINODE *pmip = iget(dev, pino);
     // creat entry in new parent DIR with same inode number of old_file
