@@ -99,7 +99,8 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|quit|mkdir] ");
+    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|quit] ");
+    //may want to add memset to clear line and/or the pathname variables
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -107,8 +108,11 @@ int main(int argc, char *argv[ ])
        continue;
     pathname[0] = 0;
 
-    sscanf(line, "%s %s", cmd, pathname);
+    sscanf(line, "%s %s %s", cmd, pathname, pathname2);
     printf("cmd=%s pathname=%s\n", cmd, pathname);
+    if (pathname2){
+      printf("pathname2=%s\n", pathname2);
+    }
   
     if (strcmp(cmd, "ls")==0)
        ls();
@@ -116,10 +120,19 @@ int main(int argc, char *argv[ ])
        cd();
     else if (strcmp(cmd, "pwd")==0)
        pwd(running->cwd);
-    else if (strcmp(cmd, "quit")==0)
-       quit();
     else if (strcmp(cmd, "mkdir")==0)
        my_mkdir();
+    else if (strcmp(cmd, "creat")==0)
+      printf("\n");
+      //add creat here
+    else if (strcmp(cmd, "rmdir")==0)
+      printf("\n");
+      //add rmdir here
+    else if (strcmp(cmd, "link")==0)
+      printf("\n");
+      //add link here
+    else if (strcmp(cmd, "quit")==0)
+       quit();
   }
 }
 
