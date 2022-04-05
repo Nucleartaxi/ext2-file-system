@@ -14,6 +14,7 @@
 #include "globals.h"
 
 #include "cd_ls_pwd.h"
+#include "mkdir_creat.h"
 
 int init()
 {
@@ -98,7 +99,7 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|quit] ");
+    printf("input command : [ls|cd|pwd|quit|mkdir|creat] ");
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -117,6 +118,10 @@ int main(int argc, char *argv[ ])
        pwd(running->cwd);
     else if (strcmp(cmd, "quit")==0)
        quit();
+    else if (strcmp(cmd, "mkdir")==0)
+       my_mkdir();
+    else if (strcmp(cmd, "creat")==0)
+       my_creat();
   }
 }
 
@@ -126,8 +131,12 @@ int quit()
   MINODE *mip;
   for (i=0; i<NMINODE; i++){
     mip = &minode[i];
-    if (mip->refCount > 0 && mip->dirty)
+    // printf("quit: ino=%d refcount=%d dirty=%d\n", mip->ino, mip->refCount, mip->dirty);
+    mip->refCount = 0; //makes sure all refCounts are 0 
+    if (mip->dirty) { //if mip was modified, write it 
+      // printf("iput\n");
       iput(mip);
+    }
   }
   exit(0);
 }
