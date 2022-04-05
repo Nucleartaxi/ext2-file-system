@@ -1,4 +1,5 @@
 #include "rmdir.h"
+#include "string.h"
 
 //checks if directory is empty
 int emptydir(MINODE *mip){
@@ -32,9 +33,29 @@ int emptydir(MINODE *mip){
 
 //removes a named dir entry from the parent dir
 int rm_child(MINODE *pmip, char* myname){
-    int ino = search(pmip, myname); //finds node by name
-    MINODE* cmip = iget(pmip->dev, ino);
     //pg 355 in pdf textbook
+    char buf[BLKSIZE];
+    char temp[256];
+
+    get_block(dev, pmip->INODE.i_block[0], buf); //get parent's data block into a buf
+    DIR* dp = (DIR*) buf;
+    char* cp = buf;
+    //step to the last entry in the data block
+    while (cp + dp->rec_len < buf + BLKSIZE) {
+        strncpy(temp, dp->name, dp->name_len);
+        temp[dp->name_len] = 0;
+        printf("%4d  %4d  %4d    %s\n", 
+            dp->inode, dp->rec_len, dp->name_len, dp->name);
+        if (strcmp(temp, myname)==0){
+            printf("found %s : ino = %d\n", temp, dp->inode);
+            break;
+            //these 2 lines are for the actual stepping
+            cp += dp->rec_len; 
+            dp = (DIR*) cp;
+        }
+    }
+    printf("name=%s ino=%d \n", temp, dp->inode);
+    printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
 }
 
 //rmdir function
