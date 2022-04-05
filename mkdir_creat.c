@@ -123,6 +123,7 @@ int kmkdir(MINODE* pmip, char* bname) { //creates the directory
     //enter_child 
     enter_child(pmip, ino, bname);
     pmip->INODE.i_links_count++;
+    pmip->dirty = 1;
 }
 
 int my_mkdir() { 
