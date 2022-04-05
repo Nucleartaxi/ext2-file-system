@@ -93,4 +93,8 @@ int symlink(){
     strcpy(pathname, pathname2);
     creat();
 
+    //change new file to LNK type
+    //NEEDS DONE STILL
+
+    
 }
