@@ -21,11 +21,8 @@ int cd()
   if (S_ISDIR(mip->INODE.i_mode)) {
     iput(running->cwd); //release old cwd
     running->cwd = mip; //change cwd to mip
-    iput(mip);
-    return 0;
   } else {
     printf("ERROR: not a directory\n");
-    iput(mip);
     return -1;
   }
 
@@ -92,17 +89,16 @@ int ls_dir(MINODE *mip)
   
   while (cp < buf + BLKSIZE){
      //gets the name of each file
-     MINODE* mip2 = iget(dev, dp->inode);
+     mip = iget(dev, dp->inode);
      strncpy(temp, dp->name, dp->name_len);
      temp[dp->name_len] = 0;
 	
-     ls_file(mip2, temp);
-     iput(mip2);
+     ls_file(mip, temp);
+
      cp += dp->rec_len;
      dp = (DIR *)cp;
   }
   printf("\n");
-  iput(mip);
 }
 
 int ls()
@@ -115,11 +111,10 @@ int ls()
     MINODE* mip = iget(dev, pathname_ino); //opening iget
     if (!S_ISDIR(mip->INODE.i_mode)) { //checks to make sure the path is a directory, not a file
       printf("Error, pathname: %s is not a directory\n", pathname);
-      iput(mip);
       return -1;
     }
     ls_dir(mip);
-    // iput(mip); //closing iput
+    iput(mip); //closing iput
   }
   return 0;
 }
@@ -136,7 +131,6 @@ char* rpwd(MINODE *wd) {
   findmyname(pip, current_ino, myname);
   rpwd(pip);
   printf("/%s", myname);
-  iput(pip);
   return 0;
 }
 char* pwd(MINODE *wd)

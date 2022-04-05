@@ -18,14 +18,13 @@ int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as 
             pmip->INODE.i_size += BLKSIZE; //increment the parent size by BLKSIZE
 
             get_block(dev, pmip->INODE.i_block[i], buf); //get newly allocated block into a buf
-            // bzero(buf, 1024);
             DIR* dp = (DIR*) buf;
 
             //add the new entry
             dp->inode = ino;
             dp->rec_len = BLKSIZE;
             dp->name_len = strlen(bname);
-            strncpy(dp->name, bname, dp->name_len);
+            strcpy(dp->name, bname);
             printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
             printf("dp->file_type=%d\n", dp->file_type);
             put_block(dev, pmip->INODE.i_block[i], buf); //write to disk
@@ -41,26 +40,26 @@ int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as 
         while (cp + dp->rec_len < buf + BLKSIZE) {
             //these 3 lines are for testing
             int test_ideal_length = 4*(  (8 + dp->name_len + 3) / 4  );
-            // printf("dp->rec_len=%d\n", dp->rec_len);
-            // printf("dp test_ideal_length=%d\n", test_ideal_length);
+            printf("dp->rec_len=%d\n", dp->rec_len);
+            printf("dp test_ideal_length=%d\n", test_ideal_length);
             //these 2 lines are for the actual stepping
             cp += dp->rec_len; 
             dp = (DIR*) cp;
         }
         //dp now points to last entry in block 
         int dp_ideal_length = 4*(  (8 + dp->name_len + 3) / 4  );
-        // printf("dp->rec_len=%d\n", dp->rec_len);
-        // printf("dp ideal_length=%d\n", dp_ideal_length);
+        printf("dp->rec_len=%d\n", dp->rec_len);
+        printf("dp ideal_length=%d\n", dp_ideal_length);
         
         int need_length = 4*(  (8 + strlen(bname) + 3) / 4  );
-        // printf("len basename=%d\n", (int) strlen(bname));
-        // printf("need length=%d\n", need_length);
+        printf("len basename=%d\n", (int) strlen(bname));
+        printf("need length=%d\n", need_length);
 
         int remain = dp->rec_len - dp_ideal_length; //last entry's rec_len - its ideal length
-        // printf("remain=%d\n", remain);
+        printf("remain=%d\n", remain);
 
         if (remain >= need_length) { //add the new entry 
-            // printf("remain >= need_length\n");
+            printf("remain >= need_length\n");
             //enter the new entry as the last entry and trim the previous entry rec_len to its ideal_length
             //dp points to last entry right now 
             dp->rec_len = dp_ideal_length; //trim previous entry
@@ -70,7 +69,7 @@ int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as 
             dp->inode = ino;
             dp->rec_len = remain;
             dp->name_len = strlen(bname);
-            strncpy(dp->name, bname, dp->name_len);
+            strcpy(dp->name, bname);
             printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
             printf("dp->file_type=%d\n", dp->file_type);
             put_block(dev, pmip->INODE.i_block[i], buf); //write to disk
@@ -123,7 +122,6 @@ int kmkdir(MINODE* pmip, char* bname) { //creates the directory
 
     //enter_child 
     enter_child(pmip, ino, bname);
-    iput(pmip);
 }
 
 int my_mkdir() { 

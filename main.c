@@ -132,18 +132,8 @@ int quit()
   MINODE *mip;
   for (i=0; i<NMINODE; i++){
     mip = &minode[i];
-    // printf("quit: ino=%d refcount=%d dirty=%d\n", mip->ino, mip->refCount, mip->dirty);
-    // if (mip->refCount > 0) {
-    //   printf("REFCOUNT > 0\n");
-    // }
-    // if (mip->dirty) {
-    //   printf("MIP IS DIRTY\n");
-    //   iput(mip);
-    // }
-    if (mip->refCount > 0 && mip->dirty) {
-      // printf("quit: WROTE ino=%d refcount=%d dirty=%d\n", mip->ino, mip->refCount, mip->dirty);
+    if (mip->refCount > 0 && mip->dirty)
       iput(mip);
-    } 
   }
   exit(0);
 }
