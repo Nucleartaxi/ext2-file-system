@@ -122,10 +122,9 @@ int main(int argc, char *argv[ ])
     else if (strcmp(cmd, "pwd")==0)
        pwd(running->cwd);
     else if (strcmp(cmd, "mkdir")==0)
-       my_mkdir();
+      my_mkdir();
     else if (strcmp(cmd, "creat")==0)
-      printf("\n");
-      //add creat here
+      my_creat();
     else if (strcmp(cmd, "rmdir")==0)
       printf("\n");
       //add rmdir here
@@ -142,8 +141,12 @@ int quit()
   MINODE *mip;
   for (i=0; i<NMINODE; i++){
     mip = &minode[i];
-    if (mip->refCount > 0 && mip->dirty)
+    // printf("quit: ino=%d refcount=%d dirty=%d\n", mip->ino, mip->refCount, mip->dirty);
+    mip->refCount = 0; //makes sure all refCounts are 0 
+    if (mip->dirty) { //if mip was modified, write it 
+      // printf("iput\n");
       iput(mip);
+    }
   }
   exit(0);
 }

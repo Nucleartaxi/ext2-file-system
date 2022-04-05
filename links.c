@@ -28,7 +28,7 @@ int link(){
     int pino = getino(parent);
     MINODE *pmip = iget(dev, pino);
     // creat entry in new parent DIR with same inode number of old_file
-    //enter_name(pmip, oino, child); //waiting for creat
+    enter_child(pmip, oino, child); //waiting for creat
 
     omip->INODE.i_links_count++;
     omip->dirty = 1;

@@ -7,6 +7,7 @@
 #include "type.h"
 #include "globals.h"
 #include "util.h"
+#include "mkdir_creat.h"
 
 //link command
 int link();
