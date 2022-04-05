@@ -1,6 +1,3 @@
-/****************************************************************************
-*                   KCW: mount root file system                             *
-*****************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -64,11 +61,11 @@ int main(int argc, char *argv[ ])
 
   dev = fd;    // global dev same as this fd   
 
-  /********** read super block  ****************/
+  //read super block
   get_block(dev, 1, buf);
   sp = (SUPER *)buf;
 
-  /* verify it's an ext2 file system ***********/
+  //verify it's an ext2 file system
   if (sp->s_magic != 0xEF53){
       printf("magic = %x is not an ext2 filesystem\n", sp->s_magic);
       exit(1);
