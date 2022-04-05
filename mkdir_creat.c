@@ -122,6 +122,8 @@ int kmkdir(MINODE* pmip, char* bname) { //creates the directory
 
     //enter_child 
     enter_child(pmip, ino, bname);
+    pmip->INODE.i_links_count++;
+    pmip->dirty = 1;
 }
 
 int my_mkdir() { 
@@ -149,6 +151,66 @@ int my_mkdir() {
     if (search(pmip, bname) == 0) {
         printf("basename %s does not exist in parent directory. This is good\n", bname);
         kmkdir(pmip, bname);
+        iput(pmip);
+        return 0;
+
+    } else {
+        printf("Error: basename %s already exists in parent directory.\n", bname);
+        iput(pmip);
+        return -1;
+    }
+}
+
+int kcreat(MINODE* pmip, char* bname) { //creates the directory
+    //allocate an inode and a disk block 
+    int ino = ialloc(dev);
+    printf("ino=%d ", ino);
+
+    //load INODE into a minode
+    MINODE* mip = iget(dev, ino);
+    INODE *ip = &mip->INODE;
+    ip->i_mode = 0x81A4; // FILE type and permissions
+    ip->i_uid = running->uid; // owner uid
+    ip->i_gid = running->gid; // group Id
+    ip->i_size = 0; // size in bytes
+    ip->i_links_count = 1; // links count=1
+    ip->i_atime = ip->i_ctime = ip->i_mtime = time(0L);
+    ip->i_blocks = 0; // LINUX: Blocks count in 512-byte chunks
+    for (int i = 0; i <= 14; ++i) { //ip->i_block[0] to ip->i_block[14] = 0;
+        ip->i_block[i] = 0;
+    }
+    mip->dirty = 1; // mark minode dirty
+    iput(mip); // write INODE to disk
+
+    //enter_child 
+    enter_child(pmip, ino, bname);
+}
+
+int my_creat() { 
+    //divide pathname into dname and bname
+    char dname_buf[128];
+    char bname_buf[128];
+    strcpy(dname_buf, pathname);
+    char* dname = dirname(dname_buf);
+    strcpy(bname_buf, pathname);
+    char* bname = basename(bname_buf);
+    printf("my_creat dname=%s bname=%s\n", dname, bname);
+
+    //dirname must exist and is a DIR
+    int pino = getino(dname);
+    MINODE* pmip = iget(dev, pino);
+    if ((pmip->INODE.i_mode & 0xF000) == 0x4000) { // if (S_ISDIR())
+        printf("%s is a dir\n", dname);
+    } else {
+        printf("Error: %s is not a dir\n", dname);
+        iput(pmip);
+        return -1;
+    }
+
+    //basename must not exist in parent DIR:
+    if (search(pmip, bname) == 0) {
+        printf("basename %s does not exist in parent directory. This is good\n", bname);
+        kcreat(pmip, bname);
         iput(pmip);
         return 0;
 
