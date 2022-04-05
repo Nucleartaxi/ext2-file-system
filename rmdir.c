@@ -25,14 +25,23 @@ int rmdir(){
     findino(mip, parentino);
     MINODE *pmip = iget(mip->dev, parentino);
 
-    //get name from parent ino
+    //get name from parent ino and remove it
     char myname[64];
     findmyname(pmip, ino, myname);
+    rm_child(pmip, myname); //make rm_child function
 
-    //remove name from parent directory
-    rm_child(pmip, name); //cont here, make rm_child function
+    //parent node housekeeping
+    pmip->INODE.i_links_count--;
+    pmip->dirty = 1;
+    iput(pmip);
+
+    //deallocate the data blocks and inode
+    bdalloc(mip->dev, mip->INODE.i_block[0]);
+    idalloc(mip->dev, mip->ino);
+    iput(mip);
 }
 
+//checks if directory is empty
 int emptydir(MINODE *mip){
     char buf[BLKSIZE], temp[256];
     DIR *dp;
@@ -60,4 +69,11 @@ int emptydir(MINODE *mip){
     else{
         return 1;
     }
+}
+
+//removes a named dir entry from the parent dir
+int rm_child(MINODE *pmip, char* myname){
+    int ino = search(pmip, myname); //finds node by name
+    MINODE* cmip = iget(pmip->dev, ino);
+    //pg 355 in pdf textbook
 }
