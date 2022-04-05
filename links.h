@@ -9,6 +9,7 @@
 #include "globals.h"
 #include "util.h"
 #include "mkdir_creat.h"
+#include "dealloc.h"
 
 //link command
 int link();
