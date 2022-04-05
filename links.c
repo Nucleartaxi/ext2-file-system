@@ -91,10 +91,25 @@ int symlink(){
     char oldfile[128];
     strcpy(oldfile, pathname);
     strcpy(pathname, pathname2);
-    creat();
+    my_creat();
 
     //change new file to LNK type
     //NEEDS DONE STILL
 
-    
+    //edit new ino values and store it
+    int nino = getino(pathname2);
+    MINODE *nmip = iget(dev, nino);
+    //store old_file name in newfile’s INODE.i_block[ ] area.
+    //NEEDS DONE STILL
+    //set file size to length of old_file name
+    //NEEDS DONE STILL
+    nmip->dirty = 1;
+    int pino;
+    findino(nmip, &pino);
+    iput(nmip);
+
+    //mark and store it's parent ino
+    MINODE *pmip = iget(dev, pino);
+    pmip->dirty = 1;
+    iput(pmip);
 }

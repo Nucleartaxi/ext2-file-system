@@ -14,4 +14,7 @@
 //link command
 int link();
 
+//symlink command
+int symlink();
+
 #endif
