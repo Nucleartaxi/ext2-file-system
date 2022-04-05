@@ -13,4 +13,4 @@ int   n;         // number of component strings
 
 int fd, dev;
 int nblocks, ninodes, bmap, imap, iblk;
-char line[128], cmd[32], pathname[128];
+char line[128], cmd[32], pathname[128], pathname2[128];
