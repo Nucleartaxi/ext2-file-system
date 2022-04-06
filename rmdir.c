@@ -139,6 +139,7 @@ int rm_child(MINODE *pmip, char* myname){
         dp->rec_len += rlen;
         printf("dp->rec_len=%d rlen=%d size=%d\n", dp->rec_len, rlen, size);
     }
+    verify_rec_lengths(buf); //for debugging
     put_block(dev, pmip->INODE.i_block[0], buf); //put block back to disk
 }
 
