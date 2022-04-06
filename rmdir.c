@@ -40,9 +40,9 @@ int rm_child(MINODE *pmip, char* myname){
 
     get_block(dev, pmip->INODE.i_block[0], buf); //get parent's data block into a buf
     DIR* dp = (DIR*) buf;
-    DIR* prev_entry;
-    DIR* entry_to_remove;
-    DIR* dp_prev = dp;
+    DIR* prev_entry = NULL;
+    DIR* entry_to_remove = NULL;
+    DIR* dp_prev = NULL;
     char* cp = buf;
     //step to the last entry in the data block
     while (cp + dp->rec_len < buf + BLKSIZE) {
@@ -61,8 +61,10 @@ int rm_child(MINODE *pmip, char* myname){
         cp += dp->rec_len; 
         dp = (DIR*) cp;
     }
+    printf("AFTER LOOP\n");
     //entry to remove points to the entry to remove 
     //dp points to last entry 
+    printf("TEST\n");
     printf("prev_entry inode=%d rec_len=%d name_len=%d name=%s\n", prev_entry->inode, prev_entry->rec_len, prev_entry->name_len, prev_entry->name);
     printf("entry_to_remove inode=%d rec_len=%d name_len=%d name=%s\n", entry_to_remove->inode, entry_to_remove->rec_len, entry_to_remove->name_len, entry_to_remove->name);
     printf("dp_prev inode=%d rec_len=%d name_len=%d name=%s\n", dp_prev->inode, dp_prev->rec_len, dp_prev->name_len, dp_prev->name);
@@ -75,6 +77,11 @@ int rm_child(MINODE *pmip, char* myname){
     } else if (entry_to_remove == dp) { //case 2, LAST entry in block. if the entry to remove equals dp because dp points to the last entry
         printf("case 2, LAST entry in block\n");
         prev_entry->rec_len += entry_to_remove->rec_len;
+    } else { //case 3, entry is first but not the only entry or in the middle of a block 
+        printf("case 3, first or middle entry\n");
+        char* next = (char*) entry_to_remove + entry_to_remove->rec_len;
+        int size = 100;
+        memcpy(entry_to_remove, next, size);
     }
     put_block(dev, pmip->INODE.i_block[0], buf); //put block back to disk
 }
@@ -90,10 +97,10 @@ int rmdir(){
         printf("ERROR: not a DIR\n");
         return -1;
     }
-    if(mip->refCount != 1){
-        printf("ERROR: MINODE is busy\n");
-        return -1;
-    }
+    // if(mip->refCount != 1){
+    //     printf("ERROR: MINODE is busy\n");
+    //     return -1;
+    // }
     if(!emptydir(mip)){
         printf("ERROR: DIR is not empty\n");
         return -1;
