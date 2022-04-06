@@ -84,6 +84,7 @@ int rm_child(MINODE *pmip, char* myname){
     //dp points to last entry 
     printf("TEST\n");
     printf("size=%d\n", size);
+    printf("size2=%d\n", size + dp->rec_len);
     printf("dp_prev inode=%d rec_len=%d name_len=%d name=%s\n", dp_prev->inode, dp_prev->rec_len, dp_prev->name_len, dp_prev->name);
     printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
     if (dp->rec_len == BLKSIZE) { //case 1, first and only entry of data block
