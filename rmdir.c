@@ -42,6 +42,7 @@ int rm_child(MINODE *pmip, char* myname){
     DIR* dp = (DIR*) buf;
     DIR* dp_prev = NULL;
     char* cp = buf;
+    int size = 0; //records the size up to, but not including, the entry we want to remove
     //step to the last entry in the data block
     while (cp + dp->rec_len < buf + BLKSIZE) {
         strncpy(temp, dp->name, dp->name_len);
@@ -53,7 +54,8 @@ int rm_child(MINODE *pmip, char* myname){
             printf("found %s : ino = %d\n", temp, dp->inode);
             break;
         }
-        //these 2 lines are for the actual stepping
+        //these lines are for the actual stepping
+        size += dp->rec_len; //increments the size by the rec_len of this entry
         dp_prev = dp; //keep the previous entry 
         cp += dp->rec_len; 
         dp = (DIR*) cp;
@@ -62,6 +64,7 @@ int rm_child(MINODE *pmip, char* myname){
     //entry to remove points to the entry to remove 
     //dp points to last entry 
     printf("TEST\n");
+    printf("size=%d\n", size);
     printf("dp_prev inode=%d rec_len=%d name_len=%d name=%s\n", dp_prev->inode, dp_prev->rec_len, dp_prev->name_len, dp_prev->name);
     printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
     if (dp->rec_len == BLKSIZE) { //case 1, first and only entry of data block
@@ -69,7 +72,7 @@ int rm_child(MINODE *pmip, char* myname){
         bdalloc(dev, pmip->INODE.i_block[0]); //deallocate the block
         pmip->INODE.i_size -= BLKSIZE; //decrement by BLKSIZE
         pmip->dirty = 1; //mark pmip modified 
-    } else if (dp == dp) { //case 2, LAST entry in block. if the entry to remove equals dp because dp points to the last entry
+    } else if (size + dp->rec_len == BLKSIZE) { //case 2, LAST entry in block. if the entry to remove equals dp because dp points to the last entry
         printf("case 2, LAST entry in block\n");
         dp_prev->rec_len += dp->rec_len;
     } else { //case 3, entry is first but not the only entry or in the middle of a block 
