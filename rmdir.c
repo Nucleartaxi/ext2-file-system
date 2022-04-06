@@ -30,6 +30,27 @@ int emptydir(MINODE *mip){
         return 1;
     }
 }
+int verify_rec_lengths(char* buf) { //function for debugging 
+    //step to the last entry in the data block
+    char temp[256];
+    int size2 = 0;
+    char* cp2 = buf;
+    DIR* dp2 = (DIR*) buf; //dp2 will point to last entry
+    while (cp2 + dp2->rec_len < buf + BLKSIZE) { //iterates to the end to get the last entry
+        strncpy(temp, dp2->name, dp2->name_len);
+        temp[dp2->name_len] = 0;
+        // printf("%4d  %4d  %4d    %s\n", 
+        //     dp->inode, dp->rec_len, dp->name_len, dp->name);
+        printf("temp=%s\n", temp);
+        printf("size=%d\n", size2);
+        //these lines are for the actual stepping
+        size2 += dp2->rec_len; //increments the size by the rec_len of this entry
+        cp2 += dp2->rec_len; 
+        dp2 = (DIR*) cp2;
+    }
+    size2 += dp2->rec_len;
+    printf("END size=%d\n", size2);
+}
 
 //removes a named dir entry from the parent dir
 int rm_child(MINODE *pmip, char* myname){
@@ -39,6 +60,7 @@ int rm_child(MINODE *pmip, char* myname){
     char temp[256];
 
     get_block(dev, pmip->INODE.i_block[0], buf); //get parent's data block into a buf
+    verify_rec_lengths(buf); //for debugging
     DIR* dp = (DIR*) buf;
     DIR* dp_prev = NULL;
     char* cp = buf;
@@ -46,8 +68,8 @@ int rm_child(MINODE *pmip, char* myname){
     //step to the last entry in the data block
     int size2 = 0;
     char* cp2 = cp;
-    DIR* dp2 = dp;
-    while (cp2 + dp2->rec_len < buf + BLKSIZE) {
+    DIR* dp2 = dp; //dp2 will point to last entry
+    while (cp2 + dp2->rec_len < buf + BLKSIZE) { //iterates to the end to get the last entry
         strncpy(temp, dp2->name, dp2->name_len);
         temp[dp2->name_len] = 0;
         // printf("%4d  %4d  %4d    %s\n", 
@@ -92,9 +114,10 @@ int rm_child(MINODE *pmip, char* myname){
         bdalloc(dev, pmip->INODE.i_block[0]); //deallocate the block
         pmip->INODE.i_size -= BLKSIZE; //decrement by BLKSIZE
         pmip->dirty = 1; //mark pmip modified 
-    } else if (size + dp->rec_len == BLKSIZE) { //case 2, LAST entry in block. if the entry to remove equals dp because dp points to the last entry
+    } else if (dp == dp2) { //case 2, LAST entry in block. if the entry to remove equals dp because dp points to the last entry
         printf("case 2, LAST entry in block\n");
         dp_prev->rec_len += dp->rec_len;
+        printf("dp_prev->rec_len=%d size=%d\n", dp_prev->rec_len, size);
     } else { //case 3, entry is first but not the only entry or in the middle of a block 
         printf("case 3, first or middle entry\n");
         int rlen = dp->rec_len; //stores the length of the entry to remove so we can add it to the last entry later 
