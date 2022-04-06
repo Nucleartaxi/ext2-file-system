@@ -40,7 +40,9 @@ int rm_child(MINODE *pmip, char* myname){
 
     get_block(dev, pmip->INODE.i_block[0], buf); //get parent's data block into a buf
     DIR* dp = (DIR*) buf;
-    DIR* entry_to_remove = NULL;
+    DIR* prev_entry;
+    DIR* entry_to_remove;
+    DIR* dp_prev = dp;
     char* cp = buf;
     //step to the last entry in the data block
     while (cp + dp->rec_len < buf + BLKSIZE) {
@@ -51,24 +53,30 @@ int rm_child(MINODE *pmip, char* myname){
         printf("temp=%s\n", temp);
         if (strcmp(temp, myname)==0){
             printf("found %s : ino = %d\n", temp, dp->inode);
+            prev_entry = dp_prev;
             entry_to_remove = dp;
         }
         //these 2 lines are for the actual stepping
+        dp_prev = dp; //keep the previous entry 
         cp += dp->rec_len; 
         dp = (DIR*) cp;
     }
     //entry to remove points to the entry to remove 
     //dp points to last entry 
-    printf("inode=%d rec_len=%d name_len=%d name=%s\n", entry_to_remove->inode, entry_to_remove->rec_len, entry_to_remove->name_len, entry_to_remove->name);
+    printf("prev_entry inode=%d rec_len=%d name_len=%d name=%s\n", prev_entry->inode, prev_entry->rec_len, prev_entry->name_len, prev_entry->name);
+    printf("entry_to_remove inode=%d rec_len=%d name_len=%d name=%s\n", entry_to_remove->inode, entry_to_remove->rec_len, entry_to_remove->name_len, entry_to_remove->name);
+    printf("dp_prev inode=%d rec_len=%d name_len=%d name=%s\n", dp_prev->inode, dp_prev->rec_len, dp_prev->name_len, dp_prev->name);
     printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
-    if (dp->rec_len == BLKSIZE) { //case 1, first and only entry of data block
+    if (entry_to_remove->rec_len == BLKSIZE) { //case 1, first and only entry of data block
         printf("case 1, first and only entry of data block\n");
         bdalloc(dev, pmip->INODE.i_block[0]); //deallocate the block
         pmip->INODE.i_size -= BLKSIZE; //decrement by BLKSIZE
         pmip->dirty = 1; //mark pmip modified 
-
-
+    } else if (entry_to_remove == dp) { //case 2, LAST entry in block. if the entry to remove equals dp because dp points to the last entry
+        printf("case 2, LAST entry in block\n");
+        prev_entry->rec_len += entry_to_remove->rec_len;
     }
+    put_block(dev, pmip->INODE.i_block[0], buf); //put block back to disk
 }
 
 //rmdir function
