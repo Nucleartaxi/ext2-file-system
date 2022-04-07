@@ -72,7 +72,6 @@ int rm_child(MINODE *pmip, char* myname){
     int size = 0; //records the size up to, but not including, the entry we want to remove
 
     //used for secondary loop to get to last entry
-    int size2 = 0;
     char* cp2 = cp;
     DIR* dp2 = dp; //dp2 will point to last entry
     //step to the last entry in the data block
@@ -81,15 +80,11 @@ int rm_child(MINODE *pmip, char* myname){
         // temp[dp2->name_len] = 0;
         // printf("temp=%s\n", temp);
         //these lines are for the actual stepping
-        size2 += dp2->rec_len; //increments the size by the rec_len of this entry
         cp2 += dp2->rec_len; 
         dp2 = (DIR*) cp2;
     }
     // printf("temp!!!!!!=%s\n", dp2->name);
-    // printf("size2=%d\n", size2);
     // printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp2->inode, dp2->rec_len, dp2->name_len, dp2->name);
-    // int size2_plus_dp = size2 + dp2->rec_len;
-    // printf("size2=%d\n", size2_plus_dp);
     while (cp + dp->rec_len < buf + BLKSIZE) {
         strncpy(temp, dp->name, dp->name_len);
         temp[dp->name_len] = 0;
