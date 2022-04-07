@@ -127,6 +127,7 @@ int symlink(){
     MINODE *cmip = iget(dev, getino(old_file_bname)); //current mip
     int pino;
     findino(cmip, &pino);
+    iput(cmip);
 
     //mark and store it's parent ino
     MINODE *pmip = iget(dev, pino);
