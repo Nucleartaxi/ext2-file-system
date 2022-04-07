@@ -25,7 +25,7 @@ int link(){
     strcpy(buf1, pathname2);
     parent = dirname(buf1);
     strcpy(buf2, pathname2);
-    child = basename(buf2);
+    child = basename(buf2); //sets child to new basename
     int pino = getino(parent);
     MINODE *pmip = iget(dev, pino);
     // creat entry in new parent DIR with same inode number of old_file

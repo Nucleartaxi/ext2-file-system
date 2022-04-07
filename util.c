@@ -102,6 +102,7 @@ void iput(MINODE *mip)
    if (!mip->dirty){ //exits if nothing new to write back
       return;
    }
+   mip->dirty = 0; //if it's dirty and we're writing it back, it shouldn't be dirty anymore
  
    //write INODE back to disk
    block = (mip->ino - 1) / 8 + iblk;
@@ -124,6 +125,8 @@ int search(MINODE *mip, char *name)
 
    printf("search for %s in MINODE = [%d, %d]\n", name,mip->dev,mip->ino);
    ip = &(mip->INODE);
+
+   /*** search for name in mip's data blocks: ASSUME i_block[0] ONLY ***/
 
    get_block(dev, ip->i_block[0], sbuf);
    dp = (DIR *)sbuf;
