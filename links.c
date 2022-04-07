@@ -93,10 +93,16 @@ int symlink(){
     }
 
     //creat new file
+    printf("pathname=%s pathname2=%s\n", pathname, pathname2);
     char oldfile[128];
+    char oldfilepath[128];
     strcpy(oldfile, pathname);
+    strcpy(oldfilepath, oldfile);
+    char* old_file_bname = dirname(oldfilepath);
     strcpy(pathname, pathname2);
     my_creat();
+
+    printf("oldfile=%s pathname=%s, pathname2=%s old_file_bname=%s\n", oldfile, pathname, pathname2, old_file_bname);
 
     //edit new ino values and store it
     int nino = getino(pathname2);
