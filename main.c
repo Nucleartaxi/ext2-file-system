@@ -131,8 +131,7 @@ int main(int argc, char *argv[ ])
     else if (strcmp(cmd, "link")==0)
       link();
     else if (strcmp(cmd, "unlink")==0)
-      printf("\n");
-      //add unlink here
+      unlink();
     else if (strcmp(cmd, "quit")==0)
       quit();
   }

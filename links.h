@@ -13,5 +13,6 @@
 
 //link command
 int link();
+int unlink();
 
 #endif
