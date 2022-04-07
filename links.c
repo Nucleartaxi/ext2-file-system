@@ -1,4 +1,5 @@
 #include "links.h"
+#include "rmdir.h"
 
 int link(){
     //verify old file exists and is not a dir
@@ -55,7 +56,7 @@ int unlink(){
     child = basename(buf2);
     int pino = getino(parent);
     MINODE *pmip = iget(dev, pino);
-    //rm_child(pmip, ino, child); //waiting for rmdir to be done
+    rm_child(pmip, child); //waiting for rmdir to be done
     pmip->dirty = 1;
     iput(pmip);
 
