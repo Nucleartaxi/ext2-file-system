@@ -1,10 +1,4 @@
-#include "stdio.h"
-#include "time.h"
-
-#include "type.h"
-#include "globals.h"
-#include "util.h"
-#include "alloc.h"
+#include "dealloc.h"
 
 //increments free inode count in super and GD
 int incFreeInodes(int dev){

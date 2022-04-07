@@ -1,9 +1,4 @@
-#include "stdio.h"
-#include "time.h"
-
-#include "type.h"
-#include "globals.h"
-#include "util.h"
+#include "alloc.h"
 
 //tests a bit for 1 or 0
 int tst_bit(char *buf, int bit){
