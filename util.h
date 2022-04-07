@@ -19,9 +19,8 @@ int search(MINODE *mip, char *name);
 
 int getino(char *pathname);
 
-// These 2 functions are needed for pwd()
 int findmyname(MINODE *parent, u32 myino, char myname[ ]);
 
-int findino(MINODE *mip, u32 *myino); // myino = i# of . return i# of ..    //this is the get_myino(MINODE *mip, int * parent_ino) function from the textbook
+int findino(MINODE *mip, u32 *myino); // myino = i# of .. return i# of .
 
 #endif
