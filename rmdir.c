@@ -52,7 +52,7 @@ int verify_rec_lengths(char* buf) { //function for debugging
     // printf("%4d  %4d  %4d    %s %4d\n", dp2->inode, dp2->rec_len, dp2->name_len, dp2->name, size2);
     // printf("temp=%s\n", temp);
     // printf("size=%d\n", size2);
-    printf("END size=%d\n", size2);
+    printf("size of all entries=%d (should be 1024)\n", size2);
 }
 
 //removes a named dir entry from the parent dir
@@ -67,7 +67,7 @@ int rm_child(MINODE *pmip, char* myname){
 
     //used in main loop
     DIR* dp = (DIR*) buf;
-    DIR* dp_prev = NULL;
+    DIR* dp_prev = NULL; //points to previous entry 
     char* cp = buf;
     int size = 0; //records the size up to, but not including, the entry we want to remove
 
@@ -76,21 +76,13 @@ int rm_child(MINODE *pmip, char* myname){
     DIR* dp2 = dp; //dp2 will point to last entry
     //step to the last entry in the data block
     while (cp2 + dp2->rec_len < buf + BLKSIZE) { //iterates to the end to get the last entry
-        // strncpy(temp, dp2->name, dp2->name_len);
-        // temp[dp2->name_len] = 0;
-        // printf("temp=%s\n", temp);
         //these lines are for the actual stepping
         cp2 += dp2->rec_len; 
         dp2 = (DIR*) cp2;
     }
-    // printf("temp!!!!!!=%s\n", dp2->name);
-    // printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp2->inode, dp2->rec_len, dp2->name_len, dp2->name);
     while (cp + dp->rec_len < buf + BLKSIZE) {
         strncpy(temp, dp->name, dp->name_len);
         temp[dp->name_len] = 0;
-        // printf("%4d  %4d  %4d    %s\n", 
-        //     dp->inode, dp->rec_len, dp->name_len, dp->name);
-        // printf("temp=%s\n", temp);
         if (strcmp(temp, myname)==0){
             printf("found %s : ino = %d\n", temp, dp->inode);
             break;
@@ -101,14 +93,8 @@ int rm_child(MINODE *pmip, char* myname){
         cp += dp->rec_len; 
         dp = (DIR*) cp;
     }
-    // printf("AFTER LOOP\n");
-    //entry to remove points to the entry to remove 
-    //dp points to last entry 
-    // printf("TEST\n");
-    // printf("size=%d\n", size);
-    // printf("size2=%d\n", size + dp->rec_len);
-    // printf("dp_prev inode=%d rec_len=%d name_len=%d name=%s\n", dp_prev->inode, dp_prev->rec_len, dp_prev->name_len, dp_prev->name);
-    // printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
+    //dp points to entry to remove
+    //dp2 points to last entry
     if (dp->rec_len == BLKSIZE) { //case 1, first and only entry of data block
         printf("case 1, first and only entry of data block\n");
         bdalloc(dev, pmip->INODE.i_block[0]); //deallocate the block
@@ -117,34 +103,16 @@ int rm_child(MINODE *pmip, char* myname){
     } else if (dp == dp2) { //case 2, LAST entry in block. if the entry to remove equals dp because dp points to the last entry
         printf("case 2, LAST entry in block\n");
         dp_prev->rec_len += dp->rec_len;
-        // printf("dp_prev->rec_len=%d size=%d\n", dp_prev->rec_len, size);
     } else { //case 3, entry is first but not the only entry or in the middle of a block 
         printf("case 3, first or middle entry\n");
         int rlen = dp->rec_len; //stores the length of the entry to remove so we can add it to the last entry later 
         char* dp_end_ptr = (char*) dp + rlen; //points to end of current entry
         memcpy(dp, dp_end_ptr, BLKSIZE - size); //copy everything after the entry we want to remove (BLKSIZE - size) into the space previously occupied by the entry we are removing
-        // printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
-        // printf("dp_end_ptr=%x cp=%x dp=%x\n", dp_end_ptr, cp, dp);
 
-        dp2 = (DIR*)((char*) dp2 - rlen); //move last pointer back by rlen because we shifted everything over
-        dp2->rec_len += rlen;
-        // printf("dp2 post memcpy dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp2->inode, dp2->rec_len, dp2->name_len, dp2->name);
-        // printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
-        // printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
-        // printf("dp->rec_len=%d rlen=%d size=%d\n", dp->rec_len, rlen, size);
-        // while (cp + dp->rec_len < buf + BLKSIZE) {
-        //     strncpy(temp, dp->name, dp->name_len);
-        //     temp[dp->name_len] = 0;
-        //     // printf("%4d  %4d  %4d    %s\n", 
-        //     //     dp->inode, dp->rec_len, dp->name_len, dp->name);
-        //     printf("temp=%s\n", temp);
-        //     //these lines are for the actual stepping
-        //     cp += dp->rec_len; 
-        //     dp = (DIR*) cp;
-        // }
-        // printf("end of loop, found last entry\n");
+        dp2 = (DIR*)((char*) dp2 - rlen); //move last pointer back by rlen because we shifted everything else over by rlen. This makes sure our pointer points to the entry it's supposed to and not to garbage
+        dp2->rec_len += rlen; //add the removed rlen to the last entry
     }
-    verify_rec_lengths(buf); //for debugging
+    verify_rec_lengths(buf); //for debugging. Prints the size of this entry, which should equal BLKSIZE (1024)
     put_block(dev, pmip->INODE.i_block[0], buf); //put block back to disk
 }
 
