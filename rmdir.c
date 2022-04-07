@@ -32,14 +32,15 @@ int emptydir(MINODE *mip){
 }
 int verify_rec_lengths(char* buf) { //function for debugging 
     //step to the last entry in the data block
-    char temp[256];
+    // char temp[256];
     int size2 = 0;
     char* cp2 = buf;
     DIR* dp2 = (DIR*) buf; //dp2 will point to last entry
     while (cp2 + dp2->rec_len < buf + BLKSIZE) { //iterates to the end to get the last entry
-        strncpy(temp, dp2->name, dp2->name_len);
-        temp[dp2->name_len] = 0;
-        printf("%4d  %4d  %4d    %s %4d\n", dp2->inode, dp2->rec_len, dp2->name_len, dp2->name, size2);
+        //uncomment these lines out to debug the contents as we iterate through each entry
+        // strncpy(temp, dp2->name, dp2->name_len);
+        // temp[dp2->name_len] = 0;
+        // printf("%4d  %4d  %4d    %s %4d\n", dp2->inode, dp2->rec_len, dp2->name_len, dp2->name, size2);
         // printf("temp=%s\n", temp);
         // printf("size=%d\n", size2);
         //these lines are for the actual stepping
@@ -48,9 +49,9 @@ int verify_rec_lengths(char* buf) { //function for debugging
         dp2 = (DIR*) cp2;
     }
     size2 += dp2->rec_len;
-    printf("%4d  %4d  %4d    %s %4d\n", dp2->inode, dp2->rec_len, dp2->name_len, dp2->name, size2);
-    printf("temp=%s\n", temp);
-    printf("size=%d\n", size2);
+    // printf("%4d  %4d  %4d    %s %4d\n", dp2->inode, dp2->rec_len, dp2->name_len, dp2->name, size2);
+    // printf("temp=%s\n", temp);
+    // printf("size=%d\n", size2);
     printf("END size=%d\n", size2);
 }
 
@@ -63,14 +64,18 @@ int rm_child(MINODE *pmip, char* myname){
 
     get_block(dev, pmip->INODE.i_block[0], buf); //get parent's data block into a buf
     verify_rec_lengths(buf); //for debugging
+
+    //used in main loop
     DIR* dp = (DIR*) buf;
     DIR* dp_prev = NULL;
     char* cp = buf;
     int size = 0; //records the size up to, but not including, the entry we want to remove
-    //step to the last entry in the data block
+
+    //used for secondary loop to get to last entry
     int size2 = 0;
     char* cp2 = cp;
     DIR* dp2 = dp; //dp2 will point to last entry
+    //step to the last entry in the data block
     while (cp2 + dp2->rec_len < buf + BLKSIZE) { //iterates to the end to get the last entry
         // strncpy(temp, dp2->name, dp2->name_len);
         // temp[dp2->name_len] = 0;
@@ -90,7 +95,7 @@ int rm_child(MINODE *pmip, char* myname){
         temp[dp->name_len] = 0;
         // printf("%4d  %4d  %4d    %s\n", 
         //     dp->inode, dp->rec_len, dp->name_len, dp->name);
-        printf("temp=%s\n", temp);
+        // printf("temp=%s\n", temp);
         if (strcmp(temp, myname)==0){
             printf("found %s : ino = %d\n", temp, dp->inode);
             break;
