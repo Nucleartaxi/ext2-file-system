@@ -1,4 +1,8 @@
 #include "links.h"
+<<<<<<< HEAD
+=======
+#include "rmdir.h"
+>>>>>>> main
 
 int link(){
     //verify old file exists and is not a dir
@@ -25,7 +29,11 @@ int link(){
     strcpy(buf1, pathname2);
     parent = dirname(buf1);
     strcpy(buf2, pathname2);
+<<<<<<< HEAD
     child = basename(buf2);
+=======
+    child = basename(buf2); //sets child to new basename
+>>>>>>> main
     int pino = getino(parent);
     MINODE *pmip = iget(dev, pino);
     // creat entry in new parent DIR with same inode number of old_file
@@ -49,6 +57,7 @@ int unlink(){
     //remove filename's entry from parent DIR's data block
     char buf1[128], buf2[128];
     char *parent, *child;
+<<<<<<< HEAD
     strcpy(buf1, pathname2);
     parent = dirname(buf1);
     strcpy(buf2, pathname2);
@@ -56,21 +65,40 @@ int unlink(){
     int pino = getino(parent);
     MINODE *pmip = iget(dev, pino);
     //rm_child(pmip, ino, child); //waiting for rmdir to be done
+=======
+    strcpy(buf1, pathname);
+    parent = dirname(buf1);
+    strcpy(buf2, pathname);
+    child = basename(buf2);
+    int pino = getino(parent);
+    MINODE *pmip = iget(dev, pino);
+    printf("child=%s\n", child);
+    rm_child(pmip, child); //waiting for rmdir to be done
+>>>>>>> main
     pmip->dirty = 1;
     iput(pmip);
 
     //decrement INODE's link count by one
     mip->INODE.i_links_count--;
     if(mip->INODE.i_links_count > 0){
+<<<<<<< HEAD
         mip->dirty = 1; //so it writes back to disk
     }
     else{ //no links
+=======
+        printf("links_count of %s >0\n", child);
+        mip->dirty = 1; //so it writes back to disk
+    }
+    else{ //no links
+        printf("links_count of %s ==0\n", child);
+>>>>>>> main
         for(int i = 0; i < mip->INODE.i_blocks; i++){
             bdalloc(mip->dev, mip->INODE.i_block[i]);
         }
         idalloc(dev, mip->ino);
     }
     iput(mip);
+<<<<<<< HEAD
 }
 
 int symlink(){
@@ -112,4 +140,7 @@ int symlink(){
     MINODE *pmip = iget(dev, pino);
     pmip->dirty = 1;
     iput(pmip);
+=======
+    
+>>>>>>> main
 }

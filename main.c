@@ -8,13 +8,11 @@
 #include <time.h>
 
 #include "type.h"
-
 #include "util.h"
-
 #include "globals.h"
-
 #include "cd_ls_pwd.h"
 #include "mkdir_creat.h"
+#include "rmdir.h"
 #include "links.h"
 
 int init()
@@ -100,8 +98,7 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|symlink|quit] ");
-    //may want to add memset to clear line and/or the pathname variables
+    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|quit] ");
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -109,9 +106,11 @@ int main(int argc, char *argv[ ])
        continue;
     pathname[0] = 0;
 
+    //clears pathname2
+    pathname2[0] = 0;
     sscanf(line, "%s %s %s", cmd, pathname, pathname2);
     printf("cmd=%s pathname=%s\n", cmd, pathname);
-    if (pathname2){
+    if (!pathname2[0]==0){
       printf("pathname2=%s\n", pathname2);
     }
   
@@ -126,16 +125,13 @@ int main(int argc, char *argv[ ])
     else if (strcmp(cmd, "creat")==0)
       my_creat();
     else if (strcmp(cmd, "rmdir")==0)
-      printf("\n");
-      //add rmdir here
+       rmdir();
     else if (strcmp(cmd, "link")==0)
       link();
     else if (strcmp(cmd, "unlink")==0)
-      printf("\n");
-      //add unlink here
+      unlink();
     else if (strcmp(cmd, "symlink")==0)
-      printf("\n");
-      //add symlink here
+      symlink();
     else if (strcmp(cmd, "quit")==0)
       quit();
   }
