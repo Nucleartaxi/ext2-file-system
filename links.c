@@ -121,13 +121,12 @@ int symlink(){
 
     nmip->INODE.i_size = strlen(oldfile); //set file size to length of old_file name
     nmip->dirty = 1;
-
     printf("isize=%d\n", nmip->INODE.i_size);
-
-    int pino;
-    return;
-    findino(nmip, &pino);
     iput(nmip);
+
+    MINODE *cmip = iget(dev, getino(old_file_bname)); //current mip
+    int pino;
+    findino(cmip, &pino);
 
     //mark and store it's parent ino
     MINODE *pmip = iget(dev, pino);
