@@ -9,5 +9,6 @@
 #include "dealloc.h"
 
 int rmdir();
+int rm_child(MINODE *pmip, char* myname);
 
 #endif
