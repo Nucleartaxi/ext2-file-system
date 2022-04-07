@@ -123,11 +123,14 @@ int rm_child(MINODE *pmip, char* myname){
     } else { //case 3, entry is first but not the only entry or in the middle of a block 
         printf("case 3, first or middle entry\n");
         int rlen = dp->rec_len; //stores the length of the entry to remove so we can add it to the last entry later 
-        printf("MEMCPY\n");
-        memcpy(dp, cp, BLKSIZE - size); //copy everything after the entry we want to remove (BLKSIZE - size) into the space previously occupied by the entry we are removing
+        char* dp_end_ptr = (char*) dp + rlen; //points to end of current entry
+        memcpy(dp, dp_end_ptr, BLKSIZE - size); //copy everything after the entry we want to remove (BLKSIZE - size) into the space previously occupied by the entry we are removing
         printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
-        printf("cp-dp=%d cp=%x dp=%x\n", cp - (char*) dp, cp, dp);
+        printf("dp_end_ptr=%x cp=%x dp=%x\n", dp_end_ptr, cp, dp);
+
+        dp2 = (DIR*)((char*) dp2 - rlen); //move last pointer back by rlen because we shifted everything over
         dp2->rec_len += rlen;
+        printf("dp2 post memcpy dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp2->inode, dp2->rec_len, dp2->name_len, dp2->name);
         // printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
         // printf("dp->inode=%d dp->rec_len=%d dp->name_len=%d dp->name=%s\n", dp->inode, dp->rec_len, dp->name_len, dp->name);
         // printf("dp->rec_len=%d rlen=%d size=%d\n", dp->rec_len, rlen, size);
