@@ -3,11 +3,13 @@
 
 #include <sys/stat.h>
 #include <time.h>
+#include <stdlib.h>
 
 #include "type.h"
 #include "globals.h"
 #include "util.h"
 
-struct stat mystat();
+struct stat my_stat();
+int my_chmod();
 
 #endif

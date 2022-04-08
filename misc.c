@@ -1,7 +1,7 @@
 #include "misc.h"
 
 //stat command
-struct stat mystat(){
+struct stat my_stat(){
     struct stat myst;
 
     //get ino of filename into memory
@@ -22,4 +22,13 @@ struct stat mystat(){
 
     iput(mip);
     return myst;
+}
+
+//chmod command (filename then mode)
+int my_chmod(){
+    int ino = getino(pathname);
+    MINODE *mip = iget(dev, ino);
+    mip->INODE.i_mode |= atoi(pathname2);
+    mip->dirty = 1;
+    iput(mip);
 }
