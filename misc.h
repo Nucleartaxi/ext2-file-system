@@ -8,5 +8,6 @@
 #include "globals.h"
 #include "util.h"
 
+struct stat mystat();
 
 #endif

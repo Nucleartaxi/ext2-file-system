@@ -17,6 +17,7 @@
 #include "mkdir_creat.h"
 #include "rmdir.h"
 #include "links.h"
+#include "misc.h"
 
 int init()
 {
@@ -54,6 +55,7 @@ int main(int argc, char *argv[ ])
 {
   int ino;
   char buf[BLKSIZE];
+  struct stat myst;
 
   printf("checking EXT2 FS ....");
   if ((fd = open(disk, O_RDWR)) < 0){
@@ -101,7 +103,7 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|quit] ");
+    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|symlink|readlink|stat|quit] ");
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -133,6 +135,8 @@ int main(int argc, char *argv[ ])
       link();
     else if (strcmp(cmd, "unlink")==0)
       unlink();
+    else if (strcmp(cmd, "stat")==0)
+      myst = mystat();
     else if (strcmp(cmd, "quit")==0)
       quit();
   }

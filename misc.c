@@ -1,7 +1,7 @@
 #include "misc.h"
 
 //stat command
-int mystat(){
+struct stat mystat(){
     struct stat myst;
 
     //get ino of filename into memory
@@ -16,10 +16,10 @@ int mystat(){
     myst.st_gid = mip->INODE.i_gid;
     myst.st_size = mip->INODE.i_size;
     myst.st_blocks = mip->INODE.i_blocks;
-    myst.st_atim = mip->INODE.i_atime;
-    myst.st_mtim = mip->INODE.i_mtime;
-    myst.st_ctim = mip->INODE.i_ctime;
+    myst.st_atim.tv_sec = mip->INODE.i_atime;
+    myst.st_mtim.tv_sec = mip->INODE.i_mtime;
+    myst.st_ctim.tv_sec = mip->INODE.i_ctime;
 
     iput(mip);
-
+    return myst;
 }
