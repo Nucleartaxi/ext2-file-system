@@ -134,3 +134,6 @@ int symlink(){
     pmip->dirty = 1;
     iput(pmip);
 }
+int readlink(char* file, char* buffer) {
+    
+}

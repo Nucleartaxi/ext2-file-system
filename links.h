@@ -21,4 +21,7 @@ int unlink();
 //symlink command
 int symlink();
 
+//readlink command 
+int readlink(char* file, char* buffer); 
+
 #endif
