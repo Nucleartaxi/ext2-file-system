@@ -10,9 +10,18 @@
 #include "util.h"
 #include "mkdir_creat.h"
 #include "dealloc.h"
+#include "rmdir.h"
 
 //link command
 int link();
+
+//unlink command
 int unlink();
+
+//symlink command
+int symlink();
+
+//readlink command 
+// int readlink(); 
 
 #endif
