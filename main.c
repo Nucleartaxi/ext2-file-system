@@ -132,6 +132,8 @@ int main(int argc, char *argv[ ])
       unlink();
     else if (strcmp(cmd, "symlink")==0)
       symlink();
+    else if (strcmp(cmd, "readlink")==0)
+      readlink();
     else if (strcmp(cmd, "quit")==0)
       quit();
   }

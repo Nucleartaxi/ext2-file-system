@@ -134,6 +134,12 @@ int symlink(){
     pmip->dirty = 1;
     iput(pmip);
 }
-int readlink(char* file, char* buffer) {
-    
+int readlink() {
+    MINODE* mip = iget(dev, getino(pathname));
+    if ((mip->INODE.i_mode & 0xF000)== 0xA000) { //check if link type
+        printf("link type OK\n");
+    } else {
+        printf("Error: file is not link type\n");
+        return -1;
+    }
 }
