@@ -22,6 +22,6 @@ int unlink();
 int symlink();
 
 //readlink command 
-int readlink(); 
+// int readlink(); 
 
 #endif

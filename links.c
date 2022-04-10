@@ -134,7 +134,7 @@ int symlink(){
     pmip->dirty = 1;
     iput(pmip);
 }
-int readlink() {
+int readlink() { //unfinished but just leaving it here in case we need it in the future
     MINODE* mip = iget(dev, getino(pathname));
     if ((mip->INODE.i_mode & 0xF000)== 0xA000) { //check if link type
         printf("link type OK\n");
