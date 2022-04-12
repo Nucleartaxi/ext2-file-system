@@ -5,8 +5,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-enum MODE {RD=0, WR=1, RW=2, APPEND=3};
-
 int my_open() {
     int ino = getino(pathname); //gets ino of pathname
     printf("ino=%d\n", ino);
