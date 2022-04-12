@@ -58,7 +58,6 @@ int verify_rec_lengths(char* buf) { //function for debugging
 //removes a named dir entry from the parent dir
 int rm_child(MINODE *pmip, char* myname){
     printf("rm_child\n");
-    //pg 355 in pdf textbook
     char buf[BLKSIZE];
     char temp[256];
 

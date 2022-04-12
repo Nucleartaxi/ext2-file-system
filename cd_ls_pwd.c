@@ -69,8 +69,8 @@ int ls_file(MINODE *mip, char *name)
   printf("%s", name); //print file basename
   //print -> linkname if symbolic file
   if ((mip->INODE.i_mode & 0xF000)== 0xA000){
-      char linkname[FILENAME_MAX];
-      readlink((const char* restrict) mip, linkname, FILENAME_MAX);
+      char linkname[BLKSIZE];
+      get_block(dev, mip->INODE.i_block[0], linkname); //gets the linkname
       printf(" -> %s", linkname); // print linked name
   }
 	
