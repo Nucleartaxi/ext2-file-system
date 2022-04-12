@@ -5,6 +5,7 @@
 
 MINODE minode[NMINODE];
 MINODE *root;
+OFT oft[NOFT]; //opened file instance
 PROC   proc[NPROC], *running;
 
 char gpath[128]; // global for tokenized components

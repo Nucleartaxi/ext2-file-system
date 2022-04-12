@@ -22,6 +22,7 @@ DIR   *dp;
 
 #define BLKSIZE  1024
 #define NMINODE   128
+#define NOFT      128
 #define NPROC       2
 
 typedef struct minode{
@@ -34,6 +35,15 @@ typedef struct minode{
   struct mntable *mptr;  // for level-3
 }MINODE;
 
+// Open file Table // opened file instance
+typedef struct oft{
+  int mode; // mode of opened file
+  int refCount; // number of PROCs sharing this instance
+  MINODE *minodePtr; // pointer to minode of file
+  int offset; // byte offset for R|W
+}OFT;
+
+// PROC structure
 typedef struct proc{
   struct proc *next;
   int          pid;      // process ID  
