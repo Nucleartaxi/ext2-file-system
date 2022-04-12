@@ -32,3 +32,11 @@ int my_chmod(){
     mip->dirty = 1;
     iput(mip);
 }
+
+int utime(){
+    int ino = getino(pathname);
+    MINODE * mip = iget(dev, ino);
+    mip->INODE.i_atime = time(0L);
+    mip->dirty = 1;
+    iput(mip);
+}

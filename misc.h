@@ -11,5 +11,6 @@
 
 struct stat my_stat();
 int my_chmod();
+int utime();
 
 #endif
