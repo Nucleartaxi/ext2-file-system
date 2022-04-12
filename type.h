@@ -22,8 +22,9 @@ DIR   *dp;
 
 #define BLKSIZE  1024
 #define NMINODE   128
-#define NOFT      128
 #define NPROC       2
+#define NFD        10
+#define NOFT       40 
 
 typedef struct minode{
   INODE INODE;           // INODE structure on disk
@@ -49,7 +50,10 @@ typedef struct proc{
   int          pid;      // process ID  
   int          uid;      // user ID
   int          gid;
+  int          ppid; 
+  int          status;
   MINODE      *cwd;      // CWD directory pointer  
+  OFT         *fd[NFD];
 }PROC;
 
 // Mount Table structure
