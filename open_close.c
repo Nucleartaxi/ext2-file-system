@@ -35,6 +35,13 @@ int my_open() {
                 printf("mode=read, write, or read-write\n");
                 oft[i].offset = 0;
             }
+            for (int j = 0; j < NFD; ++j) { //search for first free fd[index] with the lowest entry in PROC
+                if (proc[0].fd[j]==0) { //found a free entry
+                    proc[0].fd[j] = &oft[i];
+                    printf("fd=%d\n", j);
+                    return j; //return index as file descriptor
+                }
+            }
             break;
         }
     }
