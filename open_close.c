@@ -46,8 +46,14 @@ int my_open() {
         }
     }
 }
-int my_close() {
-
+int my_close(int fd) {
+    if (proc[0].fd[fd] != 0) {
+        proc[0].fd[fd]->refCount--; //dec OFT's refCount by 1 
+        if (proc[0].fd[fd]->refCount == 0) { //if last process using this OFT
+            iput(proc[0].fd[fd]->minodePtr); //release minode
+        }
+    }
+    proc[0].fd[fd] = 0; //clear PROC's fd[fd] to 0 
 }
 int my_lseek() {
 
