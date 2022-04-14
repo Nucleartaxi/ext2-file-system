@@ -16,7 +16,6 @@
 #include "link_unlink.h"
 #include "symlink.h"
 #include "misc.h"
-#include "open_close.h"
 
 int init()
 {
@@ -140,12 +139,6 @@ int main(int argc, char *argv[ ])
       my_chmod();
     else if (strcmp(cmd, "utime")==0)
       utime();
-    else if (strcmp(cmd, "open")==0)
-      my_open();
-    else if (strcmp(cmd, "close")==0)
-      my_close();
-    else if (strcmp(cmd, "lseek")==0)
-      my_lseek();
     else if (strcmp(cmd, "quit")==0)
       quit();
   }

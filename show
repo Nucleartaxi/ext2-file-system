@@ -1,3 +1,0 @@
-sudo mount diskimage ./mount
-sudo ls -a -i -l ./mount 
-sudo umount ./mount
