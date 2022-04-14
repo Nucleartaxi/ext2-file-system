@@ -1,7 +1,20 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <ext2fs/ext2_fs.h>
+#include <string.h>
+#include <libgen.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "type.h"
+#include "globals.h"
+#include "alloc_dalloc.h"
 
 int get_block(int dev, int blk, char *buf);
 

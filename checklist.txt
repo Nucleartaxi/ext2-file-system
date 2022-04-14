@@ -1,0 +1,52 @@
+
+               CS360 Project Level-1 DEMO RECORD 
+
+
+Team Member Names IDs Nathanael Ostheller - 011717168, Alex Shirk - ___
+                     
+
+                            Check List
+
+     Commands              Expected Results           Observed Results
+--------------------   -------------------------   ------------------------
+1. startup (with an EMPTY diskiamge)
+   ls:                  Show contents of / DIR      Show contents of / DIR    10
+
+2. mkdir dir1; ls:      Show /dir1 exists           Show /dir1 exists         10
+
+   mkdir dir2; ls:      Show /dir1, /dir2 exist     Show /dir1, /dir2 exist   10
+
+3. mkdir dir1/dir3 
+   ls dir1:             Show dir3 in dir1/          Show dir3 in dir1/        10
+
+4. creat file1          Show /file1 exists          Show /file1 exists        10
+
+5. rmdir dir1           REJECT (dir1 not empty)     REJECT                    10
+
+6. rmdir dir2; ls:      Show dir2 is removed        Show dir2 is removed      10
+
+7. link file1 A;ls:     file1,A same ino,  LINK=2   file1,A same ino,  LINK=2 10
+
+8. unlink A; ls:        A deleted, file1's LINK=1   A deleted, file1's LINK=1 10
+
+9. symlink file1 B;ls:  ls must show   B->file1     ls must show   B->file1   10
+
+10.unlink file1; ls:    file1 deleted, B->file1     file1 deleted, B->file1   10
+
+                                                                     Total = 100
+
+QUESTIONS:
+
+1. mkdir_creat depend on
+   enter_name(parent INODE pointer, ino, name)
+ 
+(1). What does it do?
+(2). Show enter_name() in your code, explain:
+     Enter [ino|rec_len|name_len|name] into which part of parent's data block?
+
+2. rmdir, unlink depend on 
+   rm_child(parent INODE pointer, childname)
+
+(1). What does it do?
+(2). show rm_child() function in your code, explain:
+     How to remove childname if it's the last entry in parent data block?
