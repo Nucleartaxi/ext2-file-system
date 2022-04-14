@@ -1,12 +1,4 @@
-#include <string.h>
-#include <libgen.h>
-#include <stdio.h>
-#include <time.h>
-
-#include "type.h"
-#include "globals.h"
-#include "util.h"
-#include "alloc.h"
+#include "mkdir_creat.h"
 
 int enter_child(MINODE* pmip, int ino, char* bname) { //enters ino, basename as dir_entry to parent INODE
     char buf[BLKSIZE];

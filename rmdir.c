@@ -1,5 +1,4 @@
 #include "rmdir.h"
-#include "string.h"
 
 //checks if directory is empty
 int emptydir(MINODE *mip){
@@ -116,7 +115,7 @@ int rm_child(MINODE *pmip, char* myname){
 }
 
 //rmdir function
-int rmdir(){
+int my_rmdir(){
     //get in-memory inode of path
     int ino = getino(pathname);
     MINODE *mip = iget(dev, ino);
