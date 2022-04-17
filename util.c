@@ -209,3 +209,27 @@ int findino(MINODE *mip, u32 *myino) // myino = i# of . return i# of ..    //thi
   *myino = search(mip, "..");
   return mip->ino;
 }
+
+int pathname_to_fd(char* pathname) { //gets the fd for a given pathname. Returns -1 if not found.
+   printf("pathname=%s strlen(pathname)=%d\n", pathname, strlen(pathname));
+   if (strlen(pathname) == 0) {
+      printf("pathname_to_fd error: empty pathname\n");
+      return -1;
+   }
+   int ino = getino(pathname); //gets the ino of pathname
+   if (ino == 0) {
+      printf("pathname_to_fd error: file at pathname=%s does not exist\n", pathname);
+      return -1;
+   }
+   for (int i = 0; i < NFD; ++i) {
+      printf("ino=%d\n", ino);
+      if (proc[0].fd[i]) { //if the oft entry exists
+         if (proc[0].fd[i]->minodePtr->ino == ino) {
+            printf("found fd=%d for pathname=%s\n", i, pathname);
+            return i;
+         }
+      }
+   }
+   printf("Error: no fd for pathname=%s\n", pathname);
+   return -1;
+}
