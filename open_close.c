@@ -55,6 +55,9 @@ int my_close(int fd) {
     }
     proc[0].fd[fd] = 0; //clear PROC's fd[fd] to 0 
 }
+int my_close_pathname() {
+    
+}
 int my_lseek() {
 
 }
