@@ -1,8 +1,15 @@
 #ifndef MKDIR_CREAT_H
 #define MKDIR_CREAT_H
 
+#include <string.h>
+#include <libgen.h>
+#include <stdio.h>
+#include <time.h>
+
 #include "type.h"
 #include "globals.h"
+#include "util.h"
+#include "alloc_dalloc.h"
 
 int my_mkdir();
 int my_creat();

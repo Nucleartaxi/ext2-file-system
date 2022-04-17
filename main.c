@@ -13,7 +13,9 @@
 #include "cd_ls_pwd.h"
 #include "mkdir_creat.h"
 #include "rmdir.h"
-#include "links.h"
+#include "link_unlink.h"
+#include "symlink.h"
+#include "misc.h"
 #include "open_close.h"
 
 int init()
@@ -52,6 +54,7 @@ int main(int argc, char *argv[ ])
 {
   int ino;
   char buf[BLKSIZE];
+  struct stat myst;
 
   printf("checking EXT2 FS ....");
   if ((fd = open(disk, O_RDWR)) < 0){
@@ -99,7 +102,7 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|symlink|open|close|lseek|quit] ");
+    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|symlink|chmod|utime|open|close|lseek|quit] ");
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -126,13 +129,17 @@ int main(int argc, char *argv[ ])
     else if (strcmp(cmd, "creat")==0)
       my_creat();
     else if (strcmp(cmd, "rmdir")==0)
-       rmdir();
+      my_rmdir();
     else if (strcmp(cmd, "link")==0)
-      link();
+      my_link();
     else if (strcmp(cmd, "unlink")==0)
-      unlink();
+      my_unlink();
     else if (strcmp(cmd, "symlink")==0)
-      symlink();
+      my_symlink();
+    else if (strcmp(cmd, "chmod")==0)
+      my_chmod();
+    else if (strcmp(cmd, "utime")==0)
+      utime();
     else if (strcmp(cmd, "open")==0)
       my_open();
     else if (strcmp(cmd, "close")==0)
