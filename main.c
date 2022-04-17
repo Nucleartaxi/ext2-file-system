@@ -143,7 +143,7 @@ int main(int argc, char *argv[ ])
     else if (strcmp(cmd, "open")==0)
       my_open();
     else if (strcmp(cmd, "close")==0)
-      my_close();
+      my_close_pathname();
     else if (strcmp(cmd, "lseek")==0)
       my_lseek();
     else if (strcmp(cmd, "quit")==0)
