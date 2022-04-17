@@ -50,13 +50,20 @@ int my_close(int fd) {
     if (proc[0].fd[fd] != 0) {
         proc[0].fd[fd]->refCount--; //dec OFT's refCount by 1 
         if (proc[0].fd[fd]->refCount == 0) { //if last process using this OFT
+            printf("last process using fd=%d, releasing minode\n", fd);
             iput(proc[0].fd[fd]->minodePtr); //release minode
         }
     }
     proc[0].fd[fd] = 0; //clear PROC's fd[fd] to 0 
 }
 int my_close_pathname() {
-    
+    int fd = pathname_to_fd(pathname); //get the fd of the pathname 
+    if (fd == -1) {
+        printf("Error: could not close file=%s\n", pathname);
+        return -1;
+    }
+    my_close(fd);
+    printf("Successfully closed %s, fd=%d\n", pathname, fd);
 }
 int my_lseek() {
 
