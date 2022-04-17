@@ -209,3 +209,7 @@ int findino(MINODE *mip, u32 *myino) // myino = i# of . return i# of ..    //thi
   *myino = search(mip, "..");
   return mip->ino;
 }
+
+int pathname_to_fd(char* pathname) { //gets the fd for a given pathname. Returns -1 if not found.
+   
+}

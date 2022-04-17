@@ -36,4 +36,6 @@ int findmyname(MINODE *parent, u32 myino, char myname[ ]);
 
 int findino(MINODE *mip, u32 *myino); // myino = i# of .. return i# of .
 
+int pathname_to_fd(char* pathname); //gets the fd for a given pathname. Returns -1 if not found.
+
 #endif
