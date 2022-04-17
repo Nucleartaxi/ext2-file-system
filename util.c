@@ -223,9 +223,11 @@ int pathname_to_fd(char* pathname) { //gets the fd for a given pathname. Returns
    }
    for (int i = 0; i < NFD; ++i) {
       printf("ino=%d\n", ino);
-      if (proc[0].fd[i]->minodePtr->ino == ino) {
-         printf("found fd=%d for pathname=%s\n", i, pathname);
-         return i;
+      if (proc[0].fd[i]) { //if the oft entry exists
+         if (proc[0].fd[i]->minodePtr->ino == ino) {
+            printf("found fd=%d for pathname=%s\n", i, pathname);
+            return i;
+         }
       }
    }
    printf("Error: no fd for pathname=%s\n", pathname);
