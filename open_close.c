@@ -17,10 +17,37 @@ int my_truncate(MINODE* mip) {
         }
     }
     if (mip->INODE.i_block[12]) { //indirect blocks
-
+        int buf[BLKSIZE/4];
+        get_block(dev, mip->INODE.i_block[12], (char*) buf); //get the block which holds 256 pointers to other blocks
+        for (int i = 0; i < BLKSIZE/4; ++i) {
+            if (buf[i]) {
+                printf("released block=%d\n", buf[i]);
+                bdalloc(dev, buf[i]);
+            } else { //break if we finished looking through blocks
+                break;
+            }
+        }
     }
     if (mip->INODE.i_block[13]) { //double indirect blocks
-
+        int double_indirect_buf[BLKSIZE/4];
+        get_block(dev, mip->INODE.i_block[13], (char*) double_indirect_buf); //get the double indirect block
+        for (int j = 0; j < BLKSIZE/4; j++) { //double indirect blocks
+            //indirect blocks
+            if (double_indirect_buf[j]) { //if block exists, clear all indirect blocks
+                int buf[BLKSIZE/4];
+                get_block(dev, double_indirect_buf[j], (char*) buf); //get the block which holds 256 pointers to other blocks
+                for (int i = 0; i < BLKSIZE/4; ++i) {
+                    if (buf[i]) {
+                        printf("released block=%d\n", buf[i]);
+                        bdalloc(dev, buf[i]);
+                    } else { //break if we finished looking through blocks
+                        break;
+                    }
+                }
+            } else {
+                break;
+            }
+        }
     }
 
     //TODO: update time field? 
