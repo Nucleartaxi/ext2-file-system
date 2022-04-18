@@ -7,6 +7,29 @@
 
 enum MODE {RD=0, WR=1, RW=2, APPEND=3};
 
+int my_truncate(MINODE* mip) {
+    for (int i = 0; i < 12; ++i) { //iterate through 12 direct blocks
+        if (mip->INODE.i_block[i]) { //if block exists
+            printf("released block=%d\n", mip->INODE.i_block[i]);
+            bdalloc(dev, mip->INODE.i_block[i]);
+        } else { //optimization, break loop early if block doesn't exist
+            break;
+        }
+    }
+    if (mip->INODE.i_block[12]) { //indirect blocks
+
+    }
+    if (mip->INODE.i_block[13]) { //double indirect blocks
+
+    }
+
+    //TODO: update time field? 
+
+    mip->INODE.i_size = 0; //update size
+    mip->dirty = 1; //mark mip dirty
+    return 0;
+}
+
 int my_open() {
     int ino = getino(pathname); //gets ino of pathname
     printf("ino=%d\n", ino);
@@ -28,13 +51,19 @@ int my_open() {
             oft[i].mode = mode;
             oft[i].minodePtr = mip;
             oft[i].refCount = 1;
-            if (mode == APPEND) { //for append mode, set offset to file size
-                printf("mode=append\n");
-                oft[i].offset = mip->INODE.i_size;
-            } else {
-                printf("mode=read, write, or read-write\n");
-                oft[i].offset = 0;
-            }
+            switch(mode){
+                case 0 : oft[i].offset = 0;     // R: offset = 0
+                    break;
+                case 1 : my_truncate(mip);        // W: truncate file to 0 size
+                    oft[i].offset = 0;
+                    break;
+                case 2 : oft[i].offset = 0;     // RW: do NOT truncate file
+                    break;
+                case 3 : oft[i].offset = mip->INODE.i_size;  // APPEND mode
+                    break;
+                default: printf("invalid mode\n");
+                    return(-1);
+        }
             for (int j = 0; j < NFD; ++j) { //search for first free fd[index] with the lowest entry in PROC
                 if (proc[0].fd[j]==0) { //found a free entry
                     proc[0].fd[j] = &oft[i];
