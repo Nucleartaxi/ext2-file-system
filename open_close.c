@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 enum MODE {RD=0, WR=1, RW=2, APPEND=3};
 
@@ -51,7 +52,8 @@ int my_truncate(MINODE* mip) {
     }
 
     //TODO: update time field? 
-
+    mip->INODE.i_atime = time(0L);
+    mip->INODE.i_mtime = time(0L);
     mip->INODE.i_size = 0; //update size
     mip->dirty = 1; //mark mip dirty
     return 0;
@@ -80,17 +82,25 @@ int my_open() {
             oft[i].refCount = 1;
             switch(mode){
                 case 0 : oft[i].offset = 0;     // R: offset = 0
+                    oft[i].minodePtr->INODE.i_atime = time(0L);
                     break;
                 case 1 : my_truncate(mip);        // W: truncate file to 0 size
                     oft[i].offset = 0;
+                    oft[i].minodePtr->INODE.i_atime = time(0L);
+                    oft[i].minodePtr->INODE.i_mtime = time(0L);
                     break;
                 case 2 : oft[i].offset = 0;     // RW: do NOT truncate file
+                    oft[i].minodePtr->INODE.i_atime = time(0L);
+                    oft[i].minodePtr->INODE.i_mtime = time(0L);
                     break;
                 case 3 : oft[i].offset = mip->INODE.i_size;  // APPEND mode
+                    oft[i].minodePtr->INODE.i_atime = time(0L);
+                    oft[i].minodePtr->INODE.i_mtime = time(0L);
                     break;
                 default: printf("invalid mode\n");
                     return(-1);
-        }
+            }
+            mip->dirty = 1; //because we modified time 
             for (int j = 0; j < NFD; ++j) { //search for first free fd[index] with the lowest entry in PROC
                 if (proc[0].fd[j]==0) { //found a free entry
                     proc[0].fd[j] = &oft[i];
