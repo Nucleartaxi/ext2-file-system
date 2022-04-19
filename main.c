@@ -17,6 +17,7 @@
 #include "symlink.h"
 #include "misc.h"
 #include "open_close.h"
+#include "read_cat.h"
 
 int init()
 {
@@ -102,7 +103,7 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|symlink|chmod|utime|open|close|lseek|quit] ");
+    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|symlink|chmod|utime|open|close|lseek|read|quit] ");
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -146,6 +147,8 @@ int main(int argc, char *argv[ ])
       my_close_pathname();
     else if (strcmp(cmd, "lseek")==0)
       my_lseek();
+    else if (strcmp(cmd, "read")==0)
+      read_file();
     else if (strcmp(cmd, "quit")==0)
       quit();
   }

@@ -6,4 +6,6 @@
 #include "globals.h"
 #include "util.h"
 
+int read_file();
+
 #endif

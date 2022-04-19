@@ -1,14 +1,6 @@
 #include "read_cat.h"
 
-//called read fd_name number_bytes
-int read_file(){
-    //get fd from pathname
-    if(pathname2){
-        int nbytes = atoi(pathname2);
-    }
-}
-
-int myread(int fd, char *buf, int nbytes){ //needs to be optimized
+int my_read(int fd, char *buf, int nbytes){ //needs to be optimized
     int count = 0, blk = 0;
     MINODE *mip = proc[0].fd[fd]->minodePtr;
     int avil = mip->INODE.i_size - proc[0].fd[fd]->offset; //number of bytes still availible in file
@@ -23,17 +15,17 @@ int myread(int fd, char *buf, int nbytes){ //needs to be optimized
             blk = mip->INODE.i_block[lbk];
         }
         else if(lbk >= 12 && lbk < 256 + 12){ //indirect block
-            char ibuf[256];
-            get_block(fd, ip->i_block[12], ibuf);
+            int ibuf[256];
+            get_block(fd, ip->i_block[12], readBuf);
             blk = ibuf[lbk - 12];
         }
         else{ //double indirect block
-            char ibuf[256], ibuf2[256];
-            get_block(fd, ip->i_block[13], ibuf);
+            int ibuf[256], ibuf2[256];
+            get_block(fd, ip->i_block[13], readBuf);
             int lbkSet, lbkOffset;
             lbkSet = (lbk - 268) / 256;
             lbkOffset = (lbk - 268) % 256;
-            get_block(fd, ibuf[lbkSet], ibuf2);
+            get_block(fd, ibuf[lbkSet], readBuf);
             blk = ibuf2[lbkOffset];
         }
 
@@ -59,4 +51,16 @@ int myread(int fd, char *buf, int nbytes){ //needs to be optimized
     }
     printf("myread: read %d char from file descriptor %d\n", count, fd);  
     return count;   // count is the actual number of bytes read
+}
+
+//called read fd_name number_bytes
+int read_file(){
+    char printBuf[BLKSIZE];
+    int read_fd = pathname_to_fd(pathname);
+    int nbytes = -1;
+    if(pathname2){
+        nbytes = atoi(pathname2);
+    }
+    my_read(read_fd, printBuf, BLKSIZE);
+    printf("%s", printBuf);
 }
