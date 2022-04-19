@@ -5,12 +5,11 @@ int my_read(int fd, char* buf, int nbytes){
     char* cq = buf;
 
     //compute availible bytes in file
-    int offset = proc[0].fd[fd]->offset;
-    int avil = proc[0].fd[fd]->minodePtr->INODE.i_size - offset;
+    int avil = proc[0].fd[fd]->minodePtr->INODE.i_size - proc[0].fd[fd]->offset;
 
     while(numbytes && avil){
-        int lbk = offset / BLKSIZE; //compute logical block
-        int start = offset % BLKSIZE;// compute start byte
+        int lbk = proc[0].fd[fd]->offset / BLKSIZE; //compute logical block
+        int start = proc[0].fd[fd]->offset % BLKSIZE;// compute start byte
 
         //convert logical block number (lbk) to physical block number (blk)
         if(lbk < 12){ //direct block
@@ -40,13 +39,12 @@ int my_read(int fd, char* buf, int nbytes){
         //read into buf
         while(remain){
             *cq++ = *cp++;
-            offset++; count++;
+            proc[0].fd[fd]->offset++; count++;
             remain--; avil--; nbytes--;
-            if(nbytes == 0 || remain == 0){
+            if(nbytes <= 0 || remain <= 0){
                 break;
             }
         }
-        printf("%s\n", buf);
     }
     return count;
 }
@@ -72,6 +70,19 @@ int read_file(){
         return 0;
     }
 
-    int ret = my_read(fd, readbuf, nbytes);
+    int ret = 0;
+    if(nbytes > 1024){
+        while (nbytes > 1024){
+            ret  = ret + my_read(fd, readbuf, 1024);
+            printf("%s", readbuf);
+            nbytes - 1024;
+        }
+        ret  = ret + my_read(fd, readbuf, nbytes);
+        printf("%s\n", readbuf);
+    }
+    else{
+        ret = my_read(fd, readbuf, nbytes);
+        printf("%s\n", readbuf);
+    }
     return(ret);
 }
