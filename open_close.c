@@ -1,14 +1,4 @@
-<<<<<<< HEAD
 #include "open_close.h"
-=======
-#include "globals.h"
-#include "util.h"
-#include "mkdir_creat.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
->>>>>>> main
 
 enum MODE {RD=0, WR=1, RW=2, APPEND=3};
 
