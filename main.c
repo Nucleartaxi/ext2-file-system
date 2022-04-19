@@ -102,7 +102,7 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|unlink|symlink|chmod|utime|open|close|lseek|quit] ");
+    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|symlink|unlink|open|close|lseek|chmod|utime|quit] ");
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -136,16 +136,16 @@ int main(int argc, char *argv[ ])
       my_unlink();
     else if (strcmp(cmd, "symlink")==0)
       my_symlink();
-    else if (strcmp(cmd, "chmod")==0)
-      my_chmod();
-    else if (strcmp(cmd, "utime")==0)
-      utime();
     else if (strcmp(cmd, "open")==0)
       my_open();
     else if (strcmp(cmd, "close")==0)
       my_close_pathname();
     else if (strcmp(cmd, "lseek")==0)
       my_lseek();
+    else if (strcmp(cmd, "chmod")==0)
+      my_chmod();
+    else if (strcmp(cmd, "utime")==0)
+      utime();
     else if (strcmp(cmd, "quit")==0)
       quit();
   }

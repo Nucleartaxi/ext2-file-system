@@ -76,6 +76,7 @@ int my_lseek() {
     }
     else{
         *OFT = pos;
+        printf("%d %d\n", pos, saveOFT);
         return saveOFT;
     }
 }
