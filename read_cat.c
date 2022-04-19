@@ -1,66 +1,77 @@
 #include "read_cat.h"
 
-int my_read(int fd, char *buf, int nbytes){ //needs to be optimized
-    int count = 0, blk = 0;
-    MINODE *mip = proc[0].fd[fd]->minodePtr;
-    int avil = mip->INODE.i_size - proc[0].fd[fd]->offset; //number of bytes still availible in file
-    char readBuf[BLKSIZE];
+int my_read(int fd, char* buf, int nbytes){
+    int count  = 0, blk = 0, numbytes = nbytes;
     char* cq = buf;
 
-    while(nbytes && avil){
-        int lbk = proc[0].fd[fd]->offset / BLKSIZE; //logical block
-        int startByte = proc[0].fd[fd]->offset % BLKSIZE; //start read byte
+    //compute availible bytes in file
+    int offset = proc[0].fd[fd]->offset;
+    int avil = proc[0].fd[fd]->minodePtr->INODE.i_size - offset;
 
+    while(numbytes && avil){
+        int lbk = offset / BLKSIZE; //compute logical block
+        int start = offset % BLKSIZE;// compute start byte
+
+        //convert logical block number (lbk) to physical block number (blk)
         if(lbk < 12){ //direct block
-            blk = mip->INODE.i_block[lbk];
+            blk = proc[0].fd[fd]->minodePtr->INODE.i_block[lbk];
         }
         else if(lbk >= 12 && lbk < 256 + 12){ //indirect block
             int ibuf[256];
-            get_block(fd, ip->i_block[12], readBuf);
+            get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[12], (char*)ibuf);
             blk = ibuf[lbk - 12];
         }
         else{ //double indirect block
-            int ibuf[256], ibuf2[256];
-            get_block(fd, ip->i_block[13], readBuf);
+            int ibuf[256];
+            get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[13], (char*)ibuf);
             int lbkSet, lbkOffset;
             lbkSet = (lbk - 268) / 256;
             lbkOffset = (lbk - 268) % 256;
-            get_block(fd, ibuf[lbkSet], readBuf);
-            blk = ibuf2[lbkOffset];
+            get_block(fd, ibuf[lbkSet], (char*)ibuf);
+            blk = ibuf[lbkOffset];
         }
 
-        //get data block into readbuf
-        get_block(mip->dev, blk, readBuf);
+        //prep to read
+        char kbuf[BLKSIZE];
+        get_block(dev, blk, kbuf);
+        char* cp = kbuf + start;
+        int remain = BLKSIZE - start;
 
-        //copy from startByte to buf, at most remain bytes in this block
-        char* cp = readBuf + startByte;
-        int remain = BLKSIZE - startByte; //bytes remaining
-
-        while(remain > 0){
+        //read into buf
+        while(remain){
             *cq++ = *cp++;
-            oft->offset++;
-            count++;
-            avil--;
-            nbytes--;
-            remain--;
-            if(nbytes <= 0 || avil <= 0){
+            offset++; count++;
+            remain--; avil--; nbytes--;
+            if(nbytes == 0 || remain == 0){
                 break;
             }
         }
-        //loops back through while loop if one block is not enough
+        printf("%s\n", buf);
     }
-    printf("myread: read %d char from file descriptor %d\n", count, fd);  
-    return count;   // count is the actual number of bytes read
+    return count;
 }
 
 //called read fd_name number_bytes
 int read_file(){
-    char printBuf[BLKSIZE];
-    int read_fd = pathname_to_fd(pathname);
-    int nbytes = -1;
-    if(pathname2){
+    char readbuf[BLKSIZE];
+    //get fd and nbytes from user input
+    fd = pathname_to_fd(pathname);
+    int nbytes = 0;
+    if(atoi(pathname2)){
         nbytes = atoi(pathname2);
+        printf("nbytes = %d\n", nbytes);
     }
-    my_read(read_fd, printBuf, BLKSIZE);
-    printf("%s", printBuf);
+    else{
+        nbytes = proc[0].fd[fd]->minodePtr->INODE.i_size;
+        printf("nbytes = %d\n", nbytes);
+    }
+
+    //verify file is opened in correct mode
+    if(proc[0].fd[fd]->mode != 0 && proc[0].fd[fd]->mode != 2){
+        printf("ERROR: file not opened in correct mode\n");
+        return 0;
+    }
+
+    int ret = my_read(fd, readbuf, nbytes);
+    return(ret);
 }
