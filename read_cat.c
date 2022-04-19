@@ -1,13 +1,13 @@
 #include "read_cat.h"
 
 int my_read(int fd, char* buf, int nbytes){
-    int count  = 0, blk = 0, numbytes = nbytes;
+    int count  = 0, blk = 0;
     char* cq = buf;
 
     //compute availible bytes in file
     int avil = proc[0].fd[fd]->minodePtr->INODE.i_size - proc[0].fd[fd]->offset;
 
-    while(numbytes && avil){
+    while(nbytes && avil){
         int lbk = proc[0].fd[fd]->offset / BLKSIZE; //compute logical block
         int start = proc[0].fd[fd]->offset % BLKSIZE;// compute start byte
 
@@ -51,7 +51,7 @@ int my_read(int fd, char* buf, int nbytes){
 
 //called read fd_name number_bytes
 int read_file(){
-    char readbuf[BLKSIZE];
+    char readbuf[BLKSIZE + 1];
     //get fd and nbytes from user input
     fd = pathname_to_fd(pathname);
     int nbytes = 0;
@@ -70,18 +70,22 @@ int read_file(){
         return 0;
     }
 
-    int ret = 0;
+    int ret = 0, nu;
     if(nbytes > 1024){
         while (nbytes > 1024){
             ret  = ret + my_read(fd, readbuf, 1024);
+            readbuf[1024] = '\0';
             printf("%s", readbuf);
-            nbytes - 1024;
+            nbytes -= 1024;
         }
-        ret  = ret + my_read(fd, readbuf, nbytes);
+        nu = my_read(fd, readbuf, nbytes);
+        ret  = ret + nu;
+        readbuf[nu] = '\0';
         printf("%s\n", readbuf);
     }
     else{
         ret = my_read(fd, readbuf, nbytes);
+        readbuf[ret] = '\0';
         printf("%s\n", readbuf);
     }
     return(ret);
