@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+#include "open_close.h"
+=======
 #include "globals.h"
 #include "util.h"
 #include "mkdir_creat.h"
@@ -5,6 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+>>>>>>> main
 
 enum MODE {RD=0, WR=1, RW=2, APPEND=3};
 
@@ -112,6 +116,7 @@ int my_open() {
         }
     }
 }
+
 int my_close(int fd) {
     if (proc[0].fd[fd] != 0) {
         proc[0].fd[fd]->refCount--; //dec OFT's refCount by 1 
@@ -122,6 +127,7 @@ int my_close(int fd) {
     }
     proc[0].fd[fd] = 0; //clear PROC's fd[fd] to 0 
 }
+
 int my_close_pathname() {
     int fd = pathname_to_fd(pathname); //get the fd of the pathname 
     if (fd == -1) {
@@ -131,6 +137,21 @@ int my_close_pathname() {
     my_close(fd);
     printf("Successfully closed %s, fd=%d\n", pathname, fd);
 }
-int my_lseek() {
 
+// called lseek fd_pathname position 
+int my_lseek() {
+    int fd = pathname_to_fd(pathname);
+    int pos = atoi(pathname2);
+    int saveOFT = proc[0].fd[fd]->offset;
+    int* OFT = &proc[0].fd[fd]->offset;
+    MINODE* mip = proc[0].fd[fd]->minodePtr;
+    if(pos < 0 || pos > mip->INODE.i_size - 1){
+        printf("ERROR: location outside of acceptable bounds\n");
+        return -1;
+    }
+    else{
+        *OFT = pos;
+        printf("%d %d\n", pos, saveOFT);
+        return saveOFT;
+    }
 }
