@@ -1,2 +1,2 @@
-cp diskimage.ori diskimage #use a new copy of diskimage.ori
+cp disk2.level2 diskimage #use a new copy of the level 2 diskimage
 ./mk #compile and run
