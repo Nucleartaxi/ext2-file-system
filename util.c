@@ -1,20 +1,4 @@
-/*********** util.c file ****************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <ext2fs/ext2_fs.h>
-#include <string.h>
-#include <libgen.h>
-#include <sys/stat.h>
-#include <time.h>
-
-#include <sys/types.h>
-#include <unistd.h>
-
-#include "globals.h"
-#include "type.h"
-#include "alloc.h"
-#include "dealloc.h"
+#include "util.h"
 
 int get_block(int dev, int blk, char *buf)
 {
@@ -224,4 +208,26 @@ int findino(MINODE *mip, u32 *myino) // myino = i# of . return i# of ..    //thi
 {
   *myino = search(mip, "..");
   return mip->ino;
+}
+
+int pathname_to_fd(char* pathname) { //gets the fd for a given pathname. Returns -1 if not found.
+   if (strlen(pathname) == 0) {
+      printf("pathname_to_fd error: empty pathname\n");
+      return -1;
+   }
+   int ino = getino(pathname); //gets the ino of pathname
+   if (ino == 0) {
+      printf("pathname_to_fd error: file at pathname=%s does not exist\n", pathname);
+      return -1;
+   }
+   for (int i = 0; i < NFD; ++i) {
+      if (proc[0].fd[i]) { //if the oft entry exists
+         if (proc[0].fd[i]->minodePtr->ino == ino) {
+            printf("found fd=%d for pathname=%s\n", i, pathname);
+            return i;
+         }
+      }
+   }
+   printf("Error: no fd for pathname=%s\n", pathname);
+   return -1;
 }

@@ -23,12 +23,12 @@ int myread(int fd, char *buf, int nbytes){ //needs to be optimized
             blk = mip->INODE.i_block[lbk];
         }
         else if(lbk >= 12 && lbk < 256 + 12){ //indirect block
-            int ibuf[256];
+            char ibuf[256];
             get_block(fd, ip->i_block[12], ibuf);
             blk = ibuf[lbk - 12];
         }
         else{ //double indirect block
-            int ibuf[256], ibuf2[256];
+            char ibuf[256], ibuf2[256];
             get_block(fd, ip->i_block[13], ibuf);
             int lbkSet, lbkOffset;
             lbkSet = (lbk - 268) / 256;
