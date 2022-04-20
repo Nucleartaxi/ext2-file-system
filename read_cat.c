@@ -23,9 +23,8 @@ int my_read(int fd, char* buf, int nbytes){
         else{ //double indirect block
             int ibuf[256];
             get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[13], (char*)ibuf);
-            int lbkSet, lbkOffset;
-            lbkSet = (lbk - 268) / 256;
-            lbkOffset = (lbk - 268) % 256;
+            int lbkSet = (lbk - 268) / 256;
+            int lbkOffset = (lbk - 268) % 256;
             get_block(fd, ibuf[lbkSet], (char*)ibuf);
             blk = ibuf[lbkOffset];
         }
@@ -87,6 +86,35 @@ int read_file(){
         ret = my_read(fd, readbuf, nbytes);
         readbuf[ret] = '\0';
         printf("%s\n", readbuf);
+    }
+    return(ret);
+}
+
+int my_cat(){
+    char catbuf[BLKSIZE];
+    int dummy = 0, nbytes = 0;
+
+    pathname2[0] = dummy;
+    fd = my_open();
+    nbytes = proc[0].fd[fd]->minodePtr->INODE.i_size;
+
+    int ret = 0, nu;
+    if(nbytes > 1024){
+        while (nbytes > 1024){
+            ret  = ret + my_read(fd, catbuf, 1024);
+            catbuf[1024] = '\0';
+            printf("%s", catbuf);
+            nbytes -= 1024;
+        }
+        nu = my_read(fd, catbuf, nbytes);
+        ret  = ret + nu;
+        catbuf[nu] = '\0';
+        printf("%s\n", catbuf);
+    }
+    else{
+        ret = my_read(fd, catbuf, nbytes);
+        catbuf[ret] = '\0';
+        printf("%s\n", catbuf);
     }
     return(ret);
 }
