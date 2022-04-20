@@ -71,4 +71,6 @@ typedef struct mtable{
   char mntName[64]; // mount point DIR name
 }MTABLE;
 
+enum MODE {RD=0, WR=1, RW=2, APPEND=3};
+
 #endif

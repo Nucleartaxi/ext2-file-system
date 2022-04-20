@@ -1,7 +1,5 @@
 #include "open_close.h"
 
-enum MODE {RD=0, WR=1, RW=2, APPEND=3};
-
 int my_truncate(MINODE* mip) {
     for (int i = 0; i < 12; ++i) { //iterate through 12 direct blocks
         if (mip->INODE.i_block[i]) { //if block exists
