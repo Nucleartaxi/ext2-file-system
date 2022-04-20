@@ -12,6 +12,7 @@ int my_write(int fd, char* buf, int nbytes) {
         int lbk = oftp->offset / BLKSIZE; 
         int blk = 0;
         int start = oftp->offset % BLKSIZE;
+        char kbuf[BLKSIZE];
 
         //convert logical block number (lbk) to physical block number (blk)
         if(lbk < 12){ //direct block
@@ -30,7 +31,24 @@ int my_write(int fd, char* buf, int nbytes) {
             get_block(fd, ibuf[lbkSet], (char*)ibuf);
             blk = ibuf[lbkOffset];
         }
+        get_block(dev, blk, kbuf); //read block into kbuf[BLKSIZE]
+        char* cp = kbuf + start; 
+        int remain = BLKSIZE - start; 
+        while (remain) {
+            *cp++ = *buf++; 
+            oftp->offset++; count++; 
+            remain--; nbytes--; 
+            if (oftp->offset > oftp->minodePtr->INODE.i_size) {
+                oftp->minodePtr->INODE.i_size++; 
+            }
+            if (nbytes < 0) {
+                break;
+            }
+        }
+        put_block(dev, blk, kbuf);
     }
+    oftp->minodePtr->dirty = 1; 
+    return count;
 }
 int write_file() {
     int fd = pathname_to_fd(pathname);
