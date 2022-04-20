@@ -16,5 +16,6 @@ int write_file() {
         
     } else {
         printf("Write error: fd=%d already opened for read so we cannot write\n", fd);
+        return -1;
     }
 }
