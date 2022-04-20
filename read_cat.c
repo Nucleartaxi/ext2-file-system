@@ -25,7 +25,7 @@ int my_read(int fd, char* buf, int nbytes){
             get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[13], (char*)ibuf);
             int lbkSet = (lbk - 268) / 256;
             int lbkOffset = (lbk - 268) % 256;
-            get_block(fd, ibuf[lbkSet], (char*)ibuf);
+            get_block(dev, ibuf[lbkSet], (char*)ibuf);
             blk = ibuf[lbkOffset];
         }
 
