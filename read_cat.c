@@ -117,5 +117,5 @@ int my_cat(){
         catbuf[ret] = '\0';
         printf("%s\n", catbuf);
     }
-    //return(ret);
+    return(ret);
 }
