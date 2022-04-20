@@ -25,7 +25,7 @@ int my_read(int fd, char* buf, int nbytes){
             get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[13], (char*)ibuf);
             int lbkSet = (lbk - 268) / 256;
             int lbkOffset = (lbk - 268) % 256;
-            get_block(fd, ibuf[lbkSet], (char*)ibuf);
+            get_block(dev, ibuf[lbkSet], (char*)ibuf);
             blk = ibuf[lbkOffset];
         }
 
@@ -91,12 +91,13 @@ int read_file(){
 }
 
 int my_cat(){
-    char catbuf[BLKSIZE];
+    char catbuf[BLKSIZE + 1];
     int dummy = 0, nbytes = 0;
 
     pathname2[0] = dummy;
     fd = my_open();
     nbytes = proc[0].fd[fd]->minodePtr->INODE.i_size;
+    printf("nbytes = %d\n", nbytes);
 
     int ret = 0, nu;
     if(nbytes > 1024){
@@ -116,5 +117,5 @@ int my_cat(){
         catbuf[ret] = '\0';
         printf("%s\n", catbuf);
     }
-    return(ret);
+    //return(ret);
 }
