@@ -6,6 +6,31 @@ int my_write(int fd, char* buf, int nbytes) {
     printf("text to write:\n");
     printf("%s\n\n", buf);
 
+    int count = 0; 
+    OFT* oftp = proc[0].fd[fd]; //oft pointer
+    while (nbytes) {
+        int lbk = oftp->offset / BLKSIZE; 
+        int blk = 0;
+        int start = oftp->offset % BLKSIZE;
+
+        //convert logical block number (lbk) to physical block number (blk)
+        if(lbk < 12){ //direct block
+            blk = proc[0].fd[fd]->minodePtr->INODE.i_block[lbk];
+        }
+        else if(lbk >= 12 && lbk < 256 + 12){ //indirect block
+            int ibuf[256];
+            get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[12], (char*)ibuf);
+            blk = ibuf[lbk - 12];
+        }
+        else{ //double indirect block
+            int ibuf[256];
+            get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[13], (char*)ibuf);
+            int lbkSet = (lbk - 268) / 256;
+            int lbkOffset = (lbk - 268) % 256;
+            get_block(fd, ibuf[lbkSet], (char*)ibuf);
+            blk = ibuf[lbkOffset];
+        }
+    }
 }
 int write_file() {
     int fd = pathname_to_fd(pathname);
