@@ -3,7 +3,9 @@
 
 #include "globals.h"
 #include "type.h"
-#include "string.h"
+#include "util.h"
+
+#include <string.h>
 
 int my_write(int fd, char* buf, int nbytes); 
 int write_file();
