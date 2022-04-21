@@ -67,12 +67,12 @@ int my_write(int fd, char* buf, int nbytes) {
         get_block(dev, blk, kbuf); //read block into kbuf[BLKSIZE]
         char* cp = kbuf + start; 
         int remain = BLKSIZE - start; 
-        while (remain) {
+        while (remain > 0) {
             *cp++ = *buf++; 
             oftp->offset++; count++; 
             remain--; nbytes--; 
-            if (oftp->offset > oftp->minodePtr->INODE.i_size) {
-                oftp->minodePtr->INODE.i_size++; 
+            if (oftp->offset > mip->INODE.i_size) {
+                mip->INODE.i_size++;
             }
             if (nbytes < 0) {
                 break;
@@ -93,7 +93,7 @@ int write_file() {
     //fd exists 
     if (proc[0].fd[fd]->mode != 0) { //opened for W, RW, or APPEND
         printf("fd=%d is valid mode\n", fd);
-        char buf[BLKSIZE]; 
+        char buf[BLKSIZE + 1]; 
         strcpy(buf, pathname2);
         return my_write(fd, buf, strlen(buf));
     } else {
