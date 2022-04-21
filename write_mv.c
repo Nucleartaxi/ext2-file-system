@@ -100,39 +100,39 @@ int write_file() {
 
 //called cp dest src
 int cp(){
-    char cpbuf[BLKSIZE];
+    char cpbuf[BLKSIZE+1];
     char pathnameHolder[128];
     strcpy(pathnameHolder, pathname2); //saves cp dest for use
     int nbytes = 0, nread = 0;
 
     //opens src for read
-    pathname2[0] = 0;
+    pathname2[0] = '0';
     fd = my_open();
     nbytes = proc[0].fd[fd]->minodePtr->INODE.i_size;
 
     //open dest for write or create if it doesn't exist
     strcpy(pathname, pathnameHolder);
-    pathname2[0] = 1; pathname2[1] = '\0';
+    pathname2[0] = '3'; pathname2[1] = '\0';
     int gd = my_open();
 
     if(nbytes > 1024){
         while (nbytes > 1024){
             nread = my_read(fd, cpbuf, 1024);
-            cpbuf[1024] = '\0';
-            write(gd, cpbuf, nbytes);
+            // cpbuf[1024] = '\0';
+            my_write(gd, cpbuf, nread);
             nbytes -= 1024;
         }
         nread = my_read(fd, cpbuf, nbytes);
         cpbuf[nread] = '\0';
-        write(gd, cpbuf, nbytes);
+        my_write(gd, cpbuf, nread);
     }
     else{
         nread = my_read(fd, cpbuf, nbytes);
         cpbuf[nread] = '\0';
-        write(gd, cpbuf, n);
+        my_write(gd, cpbuf, nread);
     }
 
-    close(fd);
-    close(gd);
+    my_close(fd);
+    my_close(gd);
     return 0;
 }
