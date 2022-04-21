@@ -8,21 +8,38 @@ int my_write(int fd, char* buf, int nbytes) {
 
     int count = 0; 
     OFT* oftp = proc[0].fd[fd]; //oft pointer
-    while (nbytes) {
+    while (nbytes > 0) {
         int lbk = oftp->offset / BLKSIZE; 
         int blk = 0;
         int start = oftp->offset % BLKSIZE;
+        char kbuf[BLKSIZE];
 
+        MINODE* mip = proc[0].fd[fd]->minodePtr;
         //convert logical block number (lbk) to physical block number (blk)
         if(lbk < 12){ //direct block
-            blk = proc[0].fd[fd]->minodePtr->INODE.i_block[lbk];
+            if (mip->INODE.i_block[lbk] == 0) { //no data block yet
+                mip->INODE.i_block[lbk] = balloc(mip->dev); //allocate a block
+            }
+            blk = mip->INODE.i_block[lbk];
         }
         else if(lbk >= 12 && lbk < 256 + 12){ //indirect block
             int ibuf[256];
-            get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[12], (char*)ibuf);
+            if (mip->INODE.i_block[12] == 0) { //if the indirect block doesn't exist
+                mip->INODE.i_block[12] = balloc(mip->dev);
+                get_block(dev, mip->INODE.i_block[12], (char*)ibuf); //get the allocated block
+                bzero(ibuf, BLKSIZE); //zero out the allocated block
+                put_block(dev, mip->INODE.i_block[12], (char*)ibuf); //get the allocated block
+            }
+            get_block(dev, mip->INODE.i_block[12], (char*)ibuf);
             blk = ibuf[lbk - 12];
+            if (blk == 0) { //if block doesn't exist, allocate one
+                ibuf[lbk - 12] = balloc(mip->dev);
+            }
         }
         else{ //double indirect block
+            if (mip->INODE.i_block[13] == 0) { //if the double indirect block doesn't exist
+
+            }
             int ibuf[256];
             get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[13], (char*)ibuf);
             int lbkSet = (lbk - 268) / 256;
@@ -30,7 +47,24 @@ int my_write(int fd, char* buf, int nbytes) {
             get_block(fd, ibuf[lbkSet], (char*)ibuf);
             blk = ibuf[lbkOffset];
         }
+        get_block(dev, blk, kbuf); //read block into kbuf[BLKSIZE]
+        char* cp = kbuf + start; 
+        int remain = BLKSIZE - start; 
+        while (remain) {
+            *cp++ = *buf++; 
+            oftp->offset++; count++; 
+            remain--; nbytes--; 
+            if (oftp->offset > oftp->minodePtr->INODE.i_size) {
+                oftp->minodePtr->INODE.i_size++; 
+            }
+            if (nbytes < 0) {
+                break;
+            }
+        }
+        put_block(dev, blk, kbuf);
     }
+    oftp->minodePtr->dirty = 1; 
+    return count;
 }
 
 int write_file() {
