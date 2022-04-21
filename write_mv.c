@@ -23,7 +23,7 @@ int my_write(int fd, char* buf, int nbytes) {
             blk = mip->INODE.i_block[lbk];
         }
         else if(lbk >= 12 && lbk < 256 + 12){ //indirect block
-            int ibuf[256];
+            int ibuf[BLKSIZE/4];
             if (mip->INODE.i_block[12] == 0) { //if the indirect block doesn't exist
                 mip->INODE.i_block[12] = balloc(mip->dev);
                 get_block(dev, mip->INODE.i_block[12], (char*)ibuf); //get the allocated block
@@ -37,13 +37,23 @@ int my_write(int fd, char* buf, int nbytes) {
             }
         }
         else{ //double indirect block
+            int ibuf[BLKSIZE/4]; //double indirect block buf
             if (mip->INODE.i_block[13] == 0) { //if the double indirect block doesn't exist
-
+                mip->INODE.i_block[13] = balloc(mip->dev);  //allocate the block
+                get_block(dev, mip->INODE.i_block[13], (char*)ibuf); 
+                bzero(ibuf, BLKSIZE);
+                put_block(dev, mip->INODE.i_block[13], (char*)ibuf);
             }
-            int ibuf[256];
-            get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[13], (char*)ibuf);
+            //mip->INODE.i_block[13] exists 
+            get_block(dev, mip->INODE.i_block[13], (char*)ibuf); //get the double indirect block into ibuf
             int lbkSet = (lbk - 268) / 256;
             int lbkOffset = (lbk - 268) % 256;
+            if (ibuf[lbkSet] == 0) { //allocate an indirect block for it 
+                int ibuf2[BLKSIZE/4]; //indirect block buf   
+                ibuf[lbkSet] = balloc(mip->dev); //allocate a block and store it in the double indirect block
+            }
+            put_block(dev, mip->INODE.i_block[13], ibuf); //put the double indirect block back to disk
+            
             get_block(fd, ibuf[lbkSet], (char*)ibuf);
             blk = ibuf[lbkOffset];
         }
