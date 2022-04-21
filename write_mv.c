@@ -2,10 +2,6 @@
 
 
 int my_write(int fd, char* buf, int nbytes) {
-    printf("enter my_write\n");
-    printf("text to write:\n");
-    printf("%s\n\n", buf);
-
     int count = 0; 
     OFT* oftp = proc[0].fd[fd]; //oft pointer
     while (nbytes > 0) {
@@ -107,19 +103,35 @@ int cp(){
     char cpbuf[BLKSIZE];
     char pathnameHolder[128];
     strcpy(pathnameHolder, pathname2); //saves cp dest for use
+    int nbytes = 0, nread = 0;
 
     //opens src for read
     pathname2[0] = 0;
     fd = my_open();
+    nbytes = proc[0].fd[fd]->minodePtr->INODE.i_size;
 
     //open dest for write or create if it doesn't exist
     strcpy(pathname, pathnameHolder);
     pathname2[0] = 1; pathname2[1] = '\0';
     int gd = my_open();
 
-    while(n = my_read(fd, cpbuf, BLKSIZE)){
+    if(nbytes > 1024){
+        while (nbytes > 1024){
+            nread = my_read(fd, cpbuf, 1024);
+            cpbuf[1024] = '\0';
+            write(gd, cpbuf, nbytes);
+            nbytes -= 1024;
+        }
+        nread = my_read(fd, cpbuf, nbytes);
+        cpbuf[nread] = '\0';
+        write(gd, cpbuf, nbytes);
+    }
+    else{
+        nread = my_read(fd, cpbuf, nbytes);
+        cpbuf[nread] = '\0';
         write(gd, cpbuf, n);
     }
+
     close(fd);
     close(gd);
     return 0;
