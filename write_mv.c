@@ -32,6 +32,7 @@ int my_write(int fd, char* buf, int nbytes) {
         }
     }
 }
+
 int write_file() {
     int fd = pathname_to_fd(pathname);
     if (fd < 0) {
@@ -47,5 +48,25 @@ int write_file() {
     } else {
         printf("Write error: fd=%d already opened for read so we cannot write\n", fd);
         return -1;
+    }
+}
+
+//called cp dest src
+int cp(){
+    char cpbuf[BLKSIZE];
+    char pathnameHolder[128];
+    strcpy(pathnameHolder, pathname2); //saves cp dest for use
+
+    //opens src for read
+    pathname2[0] = 0;
+    fd = my_open();
+
+    //open dest for write or create if it doesn't exist
+    strcpy(pathname, pathnameHolder);
+    pathname2[0] = 1; pathname2[1] = '\0';
+    int gd = my_open();
+
+    while(n = my_read(fd, cpbuf, BLKSIZE)){
+        write(gd, cpbuf, n);
     }
 }
