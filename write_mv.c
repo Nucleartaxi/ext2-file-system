@@ -24,8 +24,17 @@ int my_write(int fd, char* buf, int nbytes) {
         }
         else if(lbk >= 12 && lbk < 256 + 12){ //indirect block
             int ibuf[256];
-            get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[12], (char*)ibuf);
+            if (mip->INODE.i_block[12] == 0) { //if the indirect block doesn't exist
+                mip->INODE.i_block[12] = balloc(mip->dev);
+                get_block(dev, mip->INODE.i_block[12], ibuf); //get the allocated block
+                bzero(ibuf, BLKSIZE); //zero out the allocated block
+                put_block(dev, mip->INODE.i_block[12], ibuf); //get the allocated block
+            }
+            get_block(dev, mip->INODE.i_block[12], (char*)ibuf);
             blk = ibuf[lbk - 12];
+            if (blk == 0) { //if block doesn't exist, allocate one
+                ibuf[lbk - 12] = balloc(mip->dev);
+            }
         }
         else{ //double indirect block
             int ibuf[256];
