@@ -18,6 +18,7 @@
 #include "misc.h"
 #include "open_close.h"
 #include "read_cat.h"
+#include "write_mv.h"
 
 int init()
 {
@@ -103,7 +104,8 @@ int main(int argc, char *argv[ ])
   // proc[1].cwd = iget(dev, 2);
   
   while(1){
-    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|symlink|unlink|open|close|lseek|read|cat|chmod|utime|quit] ");
+    printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|symlink|unlink|chmod|utime\n");
+    printf("                 open|close|lseek|read|cat|write|cp|mv|quit] ");
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -146,8 +148,12 @@ int main(int argc, char *argv[ ])
     else if (strcmp(cmd, "read")==0)
       read_file();
       //will need to change when adding readdir
+    else if (strcmp(cmd, "write")==0)
+      write_file();
     else if (strcmp(cmd, "cat")==0)
       my_cat();
+    else if (strcmp(cmd, "cp")==0)
+      cp();
     else if (strcmp(cmd, "chmod")==0)
       my_chmod();
     else if (strcmp(cmd, "utime")==0)

@@ -116,5 +116,6 @@ int my_cat(){
         catbuf[ret] = '\0';
         printf("%s\n", catbuf);
     }
+    my_close(fd);
     return(ret);
 }

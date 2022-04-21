@@ -9,6 +9,7 @@
 #include "open_close.h"
 
 int read_file();
+int my_read(int fd, char* buf, int nbytes);
 int my_cat();
 
 #endif
