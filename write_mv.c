@@ -74,7 +74,7 @@ int my_write(int fd, char* buf, int nbytes) {
             if (oftp->offset > mip->INODE.i_size) {
                 mip->INODE.i_size++;
             }
-            if (nbytes < 0) {
+            if (nbytes <= 0) {
                 break;
             }
         }
