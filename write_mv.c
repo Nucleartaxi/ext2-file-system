@@ -26,9 +26,9 @@ int my_write(int fd, char* buf, int nbytes) {
             int ibuf[256];
             if (mip->INODE.i_block[12] == 0) { //if the indirect block doesn't exist
                 mip->INODE.i_block[12] = balloc(mip->dev);
-                get_block(dev, mip->INODE.i_block[12], ibuf); //get the allocated block
+                get_block(dev, mip->INODE.i_block[12], (char*)ibuf); //get the allocated block
                 bzero(ibuf, BLKSIZE); //zero out the allocated block
-                put_block(dev, mip->INODE.i_block[12], ibuf); //get the allocated block
+                put_block(dev, mip->INODE.i_block[12], (char*)ibuf); //get the allocated block
             }
             get_block(dev, mip->INODE.i_block[12], (char*)ibuf);
             blk = ibuf[lbk - 12];
