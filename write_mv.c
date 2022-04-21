@@ -58,7 +58,7 @@ int my_write(int fd, char* buf, int nbytes) {
             //indirect block exists 
             get_block(dev, ibuf[lbkSet], (char*)ibuf2);
             if (ibuf2[lbkOffset] == 0) { //direct block doesn't exist
-                ibuf2[lbkOffset] = balloc(mip->dev);
+                ibuf2[lbkOffset] = balloc(mip->dev); //allocate a block in the indirect block
             } 
             blk = ibuf2[lbkOffset]; //blk = double indirect[lbkSet] -> indirect[lbkOffset] -> blk
             put_block(dev, ibuf[lbkSet], (char*)ibuf2); //put indirect block back
