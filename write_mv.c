@@ -37,6 +37,9 @@ int my_write(int fd, char* buf, int nbytes) {
             }
         }
         else{ //double indirect block
+            if (mip->INODE.i_block[13] == 0) { //if the double indirect block doesn't exist
+
+            }
             int ibuf[256];
             get_block(dev, proc[0].fd[fd]->minodePtr->INODE.i_block[13], (char*)ibuf);
             int lbkSet = (lbk - 268) / 256;
