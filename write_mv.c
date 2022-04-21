@@ -120,4 +120,7 @@ int cp(){
     while(n = my_read(fd, cpbuf, BLKSIZE)){
         write(gd, cpbuf, n);
     }
+    close(fd);
+    close(gd);
+    return 0;
 }
