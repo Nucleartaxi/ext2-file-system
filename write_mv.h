@@ -9,6 +9,7 @@
 #include "open_close.h"
 #include "read_cat.h"
 
+int cp();
 int my_write(int fd, char* buf, int nbytes); 
 int write_file();
 

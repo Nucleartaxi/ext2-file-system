@@ -153,7 +153,7 @@ int main(int argc, char *argv[ ])
     else if (strcmp(cmd, "cat")==0)
       my_cat();
     else if (strcmp(cmd, "cp")==0)
-      my_cp();
+      cp();
     else if (strcmp(cmd, "chmod")==0)
       my_chmod();
     else if (strcmp(cmd, "utime")==0)
