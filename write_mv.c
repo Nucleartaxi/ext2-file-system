@@ -8,15 +8,19 @@ int my_write(int fd, char* buf, int nbytes) {
 
     int count = 0; 
     OFT* oftp = proc[0].fd[fd]; //oft pointer
-    while (nbytes) {
+    while (nbytes > 0) {
         int lbk = oftp->offset / BLKSIZE; 
         int blk = 0;
         int start = oftp->offset % BLKSIZE;
         char kbuf[BLKSIZE];
 
+        MINODE* mip = proc[0].fd[fd]->minodePtr;
         //convert logical block number (lbk) to physical block number (blk)
         if(lbk < 12){ //direct block
-            blk = proc[0].fd[fd]->minodePtr->INODE.i_block[lbk];
+            if (mip->INODE.i_block[lbk] == 0) { //no data block yet
+                mip->INODE.i_block[lbk] = balloc(mip->dev); //allocate a block
+            }
+            blk = mip->INODE.i_block[lbk];
         }
         else if(lbk >= 12 && lbk < 256 + 12){ //indirect block
             int ibuf[256];
