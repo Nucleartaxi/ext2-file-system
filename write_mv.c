@@ -38,6 +38,7 @@ int my_write(int fd, char* buf, int nbytes) {
                 put_block(dev, ibuf[lbk - 12], (char*)ibuf2); //get the newly allocated block
                 blk = ibuf[lbk - 12];
             }
+            put_block(dev, mip->INODE.i_block[12], (char*)ibuf);
 
         }
         else{ //double indirect block
