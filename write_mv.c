@@ -41,9 +41,6 @@ int my_write(int fd, char* buf, int nbytes) {
             put_block(dev, mip->INODE.i_block[12], (char*)ibuf);
 
         }
-
-        //DONT FORGET ABOUT THE OPTIMIZATION CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         else{ //double indirect block
             int ibuf[BLKSIZE/4]; //double indirect block buf
             if (mip->INODE.i_block[13] == 0) { //if the double indirect block doesn't exist
