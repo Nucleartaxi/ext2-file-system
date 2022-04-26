@@ -21,16 +21,24 @@ int my_write(int fd, char* buf, int nbytes) {
         else if(lbk >= 12 && lbk < 256 + 12){ //indirect block
             int ibuf[BLKSIZE/4];
             if (mip->INODE.i_block[12] == 0) { //if the indirect block doesn't exist
+                printf("allocated indirect block i_block[12]\n");
                 mip->INODE.i_block[12] = balloc(mip->dev);
                 get_block(dev, mip->INODE.i_block[12], (char*)ibuf); //get the allocated block
                 bzero(ibuf, BLKSIZE); //zero out the allocated block
                 put_block(dev, mip->INODE.i_block[12], (char*)ibuf); //get the allocated block
             }
-            get_block(dev, mip->INODE.i_block[12], (char*)ibuf);
+            get_block(dev, mip->INODE.i_block[12], (char*)ibuf); //get the indirect block into ibuf
             blk = ibuf[lbk - 12];
+            int ibuf2[BLKSIZE/4]; //buf for zeroing out the direct block within indirect block
             if (blk == 0) { //if block doesn't exist, allocate one
+                printf("allocated new block in indirect block\n");
                 ibuf[lbk - 12] = balloc(mip->dev);
+                get_block(dev, ibuf[lbk - 12], (char*)ibuf2); //get the newly allocated block
+                bzero(ibuf2, BLKSIZE);
+                put_block(dev, ibuf[lbk - 12], (char*)ibuf2); //get the newly allocated block
+                blk = ibuf[lbk - 12];
             }
+
         }
         else{ //double indirect block
             int ibuf[BLKSIZE/4]; //double indirect block buf
@@ -50,11 +58,17 @@ int my_write(int fd, char* buf, int nbytes) {
                 get_block(dev, ibuf[lbkSet], (char*)ibuf2); //get the indirect block
                 bzero(ibuf2, BLKSIZE); //zero out indirect block 
                 put_block(dev, ibuf[lbkSet], (char*)ibuf2); //put indirect block back to disk
+                blk = ibuf[lbkSet];
             }
             //indirect block exists 
             get_block(dev, ibuf[lbkSet], (char*)ibuf2);
+            int ibuf3[BLKSIZE/4];
             if (ibuf2[lbkOffset] == 0) { //direct block doesn't exist
                 ibuf2[lbkOffset] = balloc(mip->dev); //allocate a block in the indirect block
+                get_block(dev, ibuf2[lbkOffset], (char*)ibuf3); //get direct block
+                bzero(ibuf3, BLKSIZE); //zero out direct block
+                put_block(dev, ibuf2[lbkOffset], (char*)ibuf3); //put zeroed out direct block back 
+                blk = ibuf2[lbkOffset];
             } 
             blk = ibuf2[lbkOffset]; //blk = double indirect[lbkSet] -> indirect[lbkOffset] -> blk
             put_block(dev, ibuf[lbkSet], (char*)ibuf2); //put indirect block back
