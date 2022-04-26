@@ -35,15 +35,28 @@ int my_read(int fd, char* buf, int nbytes){
         char* cp = kbuf + start;
         int remain = BLKSIZE - start;
 
-        //read into buf
-        while(remain){
-            *cq++ = *cp++;
-            proc[0].fd[fd]->offset++; count++;
-            remain--; avil--; nbytes--;
-            if(nbytes <= 0 || remain <= 0){
-                break;
-            }
+        int to_read; //stores the number of bytes to read
+        if (remain < nbytes) { //min of remain and nbytes, so either read as many as remain allows if remain < nbytes, or write nbytes if nbytes < remain
+            to_read = remain;
+        } else {
+            to_read = nbytes;
         }
+        memcpy(buf, cp, to_read); 
+        proc[0].fd[fd]->offset += to_read; //update offset 
+        count += to_read; //update count of bytes written
+        avil -= to_read;
+        nbytes -= to_read; //update nbytes 
+        remain -= to_read; //update remain
+
+        //read into buf
+        // while(remain){
+        //     *cq++ = *cp++;
+        //     proc[0].fd[fd]->offset++; count++;
+        //     remain--; avil--; nbytes--;
+        //     if(nbytes <= 0 || remain <= 0){
+        //         break;
+        //     }
+        // }
     }
     return count;
 }
