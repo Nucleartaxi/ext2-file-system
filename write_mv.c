@@ -41,6 +41,9 @@ int my_write(int fd, char* buf, int nbytes) {
             put_block(dev, mip->INODE.i_block[12], (char*)ibuf);
 
         }
+
+        //DONT FORGET ABOUT THE OPTIMIZATION CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         else{ //double indirect block
             int ibuf[BLKSIZE/4]; //double indirect block buf
             if (mip->INODE.i_block[13] == 0) { //if the double indirect block doesn't exist
@@ -78,17 +81,34 @@ int my_write(int fd, char* buf, int nbytes) {
         get_block(dev, blk, kbuf); //read block into kbuf[BLKSIZE]
         char* cp = kbuf + start; 
         int remain = BLKSIZE - start; 
-        while (remain > 0) {
-            *cp++ = *buf++; 
-            oftp->offset++; count++; 
-            remain--; nbytes--; 
-            if (oftp->offset > mip->INODE.i_size) {
-                mip->INODE.i_size++;
-            }
-            if (nbytes <= 0) {
-                break;
-            }
+
+        int to_write; //stores the number of bytes to write 
+        if (remain < nbytes) { //min of remain and nbytes, so either write as many as remain allows if remain < nbytes, or write nbytes if nbytes < remain
+            to_write = remain;
+        } else {
+            to_write = nbytes;
         }
+        memcpy(cp, buf, to_write); 
+        count += to_write; //update count of bytes written
+        nbytes -= to_write; //update nbytes 
+        remain -= to_write; //update remain
+        oftp->offset += to_write; //update offset 
+        if (oftp->offset > mip->INODE.i_size) { //update size if offset > size. (mostly used for RW and APPEND)
+            mip->INODE.i_size += to_write;
+        }
+        // mip->INODE.i_size += remain;
+        // count += remain;
+        // while (remain > 0) {
+        //     *cp++ = *buf++; 
+        //     oftp->offset++; count++; 
+        //     remain--; nbytes--; 
+        //     if (oftp->offset > mip->INODE.i_size) {
+        //         mip->INODE.i_size++;
+        //     }
+        //     if (nbytes <= 0) {
+        //         break;
+        //     }
+        // }
         put_block(dev, blk, kbuf);
     }
     oftp->minodePtr->dirty = 1; 
