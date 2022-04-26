@@ -46,8 +46,17 @@ int init()
 // load root INODE and set root pointer to it
 int mount_root()
 {  
+  char buf[BLKSIZE];
   printf("mount_root()\n");
   root = iget(dev, 2);
+  
+  //records info of root device
+  mountTable[0].dev = root->dev;
+  mountTable[0].ninodes = sp->s_inodes_count;
+  mountTable[0].nblocks = sp->s_blocks_count;
+  mountTable[0].bmap = gp->bg_block_bitmap;
+  mountTable[0].imap = gp->bg_inode_bitmap;
+  mountTable[0].iblk = gp->bg_inode_table;
 }
 
 char *disk = "diskimage";

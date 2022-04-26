@@ -57,19 +57,17 @@ typedef struct proc{
 }PROC;
 
 // Mount Table structure
-typedef struct mtable{
-  int dev; // device number; 0 for FREE
-  int ninodes; // from superblock
-  int nblocks;
-  int free_blocks; // from superblock and GD
-  int free_inodes;
-  int bmap; // from group descriptor
-  int imap;
-  int iblock; // inodes start block
-  MINODE *mntDirPtr; // mount point DIR pointer
-  char devName[64]; //device name
-  char mntName[64]; // mount point DIR name
-}MTABLE;
+typedef struct Mount{
+  int    dev;       // dev (opened vdisk fd number) 0 means FREE 
+  int    ninodes;   // from superblock
+  int    nblocks;
+  int    bmap;      // from GD block  
+  int    imap;
+  int    iblk;
+  struct Minode *mounted_inode;
+  char   name[64];  // device name, e.g. mydisk
+  char   mount_name[64]; // mounted DIR pathname
+} MOUNT;
 
 enum MODE {RD=0, WR=1, RW=2, APPEND=3};
 

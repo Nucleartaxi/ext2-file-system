@@ -38,7 +38,7 @@ int tokenize(char *pathname)
 MINODE *iget(int dev, int ino)
 {
    MINODE *mip;
-   MTABLE *mp;
+   MOUNT *mp;
    INODE *ip;
    int i, blk, offset;
    char buf[BLKSIZE];
