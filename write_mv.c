@@ -96,19 +96,7 @@ int my_write(int fd, char* buf, int nbytes) {
         if (oftp->offset > mip->INODE.i_size) { //update size if offset > size. (mostly used for RW and APPEND)
             mip->INODE.i_size += to_write;
         }
-        // mip->INODE.i_size += remain;
-        // count += remain;
-        // while (remain > 0) {
-        //     *cp++ = *buf++; 
-        //     oftp->offset++; count++; 
-        //     remain--; nbytes--; 
-        //     if (oftp->offset > mip->INODE.i_size) {
-        //         mip->INODE.i_size++;
-        //     }
-        //     if (nbytes <= 0) {
-        //         break;
-        //     }
-        // }
+        
         put_block(dev, blk, kbuf);
     }
     oftp->minodePtr->dirty = 1; 

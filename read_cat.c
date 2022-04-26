@@ -47,16 +47,6 @@ int my_read(int fd, char* buf, int nbytes){
         avil -= to_read;
         nbytes -= to_read; //update nbytes 
         remain -= to_read; //update remain
-
-        //read into buf
-        // while(remain){
-        //     *cq++ = *cp++;
-        //     proc[0].fd[fd]->offset++; count++;
-        //     remain--; avil--; nbytes--;
-        //     if(nbytes <= 0 || remain <= 0){
-        //         break;
-        //     }
-        // }
     }
     return count;
 }
