@@ -1,5 +1,5 @@
-#ifndef WRITE_MV_H
-#define WRITE_MV_H
+#ifndef WRITE_CP_H
+#define WRITE_CP_H
 
 #include <string.h>
 

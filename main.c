@@ -18,7 +18,7 @@
 #include "misc.h"
 #include "open_close.h"
 #include "read_cat.h"
-#include "write_mv.h"
+#include "write_cp.h"
 
 int init()
 {
