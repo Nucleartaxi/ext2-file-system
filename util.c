@@ -152,11 +152,16 @@ int getino(char *pathname)
   mip->refCount++;         // because we iput(mip) later
   
   tokenize(pathname);
-
+  //int olddev = dev;
   for (i=0; i<n; i++){
       printf("===========================================\n");
       printf("getino: i=%d name[%d]=%s\n", i, i, name[i]);
- 
+
+      if(mip->mounted == 1){
+         MOUNT* mp = mip->mptr;
+         dev = mp->dev;
+         mip = iget(dev, 2);
+      }
       ino = search(mip, name[i]);
 
       if (ino==0){
@@ -169,6 +174,7 @@ int getino(char *pathname)
    }
 
    iput(mip);
+   //dev = olddev;
    return ino;
 }
 
