@@ -18,8 +18,12 @@ int my_mount(){
     }
     //set variables to fit 
     char disk[128]; strcpy(disk, pathname);
-    printf("SEGFAULT CHECK\n");
     int ino = getino(pathname2);
+    if (ino == 0){
+        strcpy(pathname, pathname2);
+        my_mkdir();
+        ino = getino(pathname);
+    }
     MINODE *mountPoint = iget(dev, ino);
     //check if filesys is already mounted
     for (int i = 0; i < 8; i++){
@@ -34,8 +38,8 @@ int my_mount(){
     }
     mp = &mountTable[i];
     //open filesys for read/write
-    pathname2[0] = '2'; pathname2[1] = 0; char buf[BLKSIZE];
-    dev = my_open();
+    char buf[BLKSIZE];
+    dev = open(disk, 2, buf);
     get_block(dev, 1, buf);
     sp = (SUPER *)buf;
     if (sp->s_magic != 0xEF53){
@@ -43,6 +47,7 @@ int my_mount(){
       return -1;
     }
     //verify mount point is a DIR and not busy
+    
     if ((mountPoint->INODE.i_mode & 0xF000) != 0x4000){ // if (S_ISDIR())
       printf("ERROR: Mount Point is not a DIR\n");
       return -1;

@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "util.h"
 #include "open_close.h"
+#include "mkdir_creat.h"
 
 int my_mount();
 
