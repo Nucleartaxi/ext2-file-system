@@ -1,5 +1,7 @@
 # run under Linux:
 
+mkdir ./mount
+
 sudo mount diskimage ./mount
 
 echo diff large with copied newlarge 
