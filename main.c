@@ -115,7 +115,7 @@ int main(int argc, char *argv[ ])
   
   while(1){
     printf("input command : [ls|cd|pwd|mkdir|creat|rmdir|link|symlink|unlink|chmod|utime\n");
-    printf("                 open|close|lseek|read|cat|write|cp|mv|quit] ");
+    printf("                 open|close|lseek|read|cat|write|cp|mv|mount|quit] ");
     fgets(line, 128, stdin);
     line[strlen(line)-1] = 0;
 
@@ -168,6 +168,8 @@ int main(int argc, char *argv[ ])
       my_chmod();
     else if (strcmp(cmd, "utime")==0)
       utime();
+    else if (strcmp(cmd, "mount")==0)
+      my_mount();
     else if (strcmp(cmd, "quit")==0)
       quit();
   }

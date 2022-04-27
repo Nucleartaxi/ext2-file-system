@@ -10,22 +10,23 @@ MOUNT *getmptr(int dev){
 }
 
 //use by mount filesys mount_point or just mount
-int mount(){
+int my_mount(){
     //if just mount display mounted filesystem
     if (pathname2 == '\0'){ 
         //display mounted filesystem
         return 0;
     }
     //set variables to fit 
-    char* disk; strcpy(disk, pathname);
+    char disk[128]; strcpy(disk, pathname);
+    printf("SEGFAULT CHECK\n");
     int ino = getino(pathname2);
     MINODE *mountPoint = iget(dev, ino);
     //check if filesys is already mounted
     for (int i = 0; i < 8; i++){
-        if(strcmp(disk, mountTable[i].name) == 0){
-            printf("ERROR: filesystem %s already is mounted.\n", disk);
-            return -1;
-        }
+            if(strcmp(disk, mountTable[i].name) == 0){
+                printf("ERROR: filesystem %s already is mounted.\n", disk);
+                return -1;
+            }
     }
     int i = 0; MOUNT* mp = 0;
     while(mountTable[i].dev){
@@ -33,7 +34,7 @@ int mount(){
     }
     mp = &mountTable[i];
     //open filesys for read/write
-    pathname2[0] = 2; pathname2[1] = "\0"; char buf[BLKSIZE];
+    pathname2[0] = '2'; pathname2[1] = 0; char buf[BLKSIZE];
     dev = my_open();
     get_block(dev, 1, buf);
     sp = (SUPER *)buf;
@@ -60,6 +61,7 @@ int mount(){
     mountTable[i].imap = gp->bg_inode_bitmap;
     mountTable[i].iblk = gp->bg_inode_table;
     //mark as mounted and let point to mount table entry which points to mount point
-    mountPoint->mounted = mountTable[i].mounted_inode = mountPoint;
+    mountPoint->mounted = 1;
+    mountTable[i].mounted_inode = mountPoint;
     return 0;
 }

@@ -6,4 +6,6 @@
 #include "util.h"
 #include "open_close.h"
 
+int my_mount();
+
 #endif

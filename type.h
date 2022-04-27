@@ -64,7 +64,7 @@ typedef struct Mount{
   int    bmap;      // from GD block  
   int    imap;
   int    iblk;
-  struct Minode *mounted_inode;
+  MINODE *mounted_inode;
   char   name[64];  // device name, e.g. mydisk
   char   mount_name[64]; // mounted DIR pathname
 } MOUNT;
