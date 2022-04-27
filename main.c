@@ -19,6 +19,7 @@
 #include "open_close.h"
 #include "read_cat.h"
 #include "write_cp.h"
+#include "mount_umount.h"
 
 int init()
 {
